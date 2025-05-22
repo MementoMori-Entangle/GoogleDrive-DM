@@ -1,4 +1,4 @@
-# CAFirstTest
+# GoogleDriveDirectoryManager
 
 Google Drive と連携したファイル管理アプリ（Flutter製）
 
