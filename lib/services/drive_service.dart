@@ -14,7 +14,7 @@ class DriveService {
     final driveApi = drive.DriveApi(client);
 
     final fileList = await driveApi.files.list(
-      q: "'${directoryId}' in parents and trashed = false",
+      q: "'$directoryId' in parents and trashed = false",
       spaces: 'drive',
       $fields: 'files(id,name,size)',
       pageSize: 1000,
@@ -30,7 +30,8 @@ class DriveService {
         .toList();
   }
 
-  Future<Map<String, int>> fetchDriveStorageInfo({required GoogleSignInAccount user}) async {
+  Future<Map<String, int>> fetchDriveStorageInfo(
+      {required GoogleSignInAccount user}) async {
     final authHeaders = await user.authHeaders;
     final client = GoogleAuthClient(authHeaders);
     final driveApi = drive.DriveApi(client);

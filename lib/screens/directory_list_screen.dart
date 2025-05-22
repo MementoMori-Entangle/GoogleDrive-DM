@@ -3,8 +3,6 @@ import '../services/directory_service.dart';
 import '../models/directory.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'directory_edit_screen.dart';
-import 'package:flutter/services.dart';
-import 'dart:io';
 
 class DirectoryListScreen extends StatefulWidget {
   final GoogleSignInAccount user;
@@ -44,12 +42,12 @@ class _DirectoryListScreenState extends State<DirectoryListScreen> {
   }
 
   void addOrEditDirectory(DirectoryInfo directory) async {
-    await DirectoryService().addOrUpdateDirectory(directory);
+    await DirectoryService().addOrUpdateDirectory(widget.user, directory);
     await fetchDirectories();
   }
 
   void deleteDirectory(DirectoryInfo directory) async {
-    await DirectoryService().removeDirectory(directory.id);
+    await DirectoryService().removeDirectory(widget.user, directory.id);
     await fetchDirectories();
   }
 
@@ -59,17 +57,6 @@ class _DirectoryListScreenState extends State<DirectoryListScreen> {
       appBar: AppBar(
         title: const Text('ディレクトリID一覧'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            tooltip: 'アプリ終了',
-            onPressed: () {
-              try {
-                SystemNavigator.pop();
-              } catch (_) {
-                exit(0);
-              }
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'ディレクトリ追加',

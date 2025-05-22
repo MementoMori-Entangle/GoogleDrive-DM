@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:io';
 import '../repositories/directory_history_repository.dart';
 import '../models/directory_history.dart';
 
@@ -45,19 +43,6 @@ class _DirectoryHistoryScreenState extends State<DirectoryHistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ディレクトリ操作履歴'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            tooltip: 'アプリ終了',
-            onPressed: () {
-              try {
-                SystemNavigator.pop();
-              } catch (_) {
-                exit(0);
-              }
-            },
-          ),
-        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

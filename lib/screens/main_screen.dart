@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../services/drive_service.dart';
-import '../models/file_info.dart';
 import '../services/directory_service.dart';
 import '../models/directory.dart';
 import 'directory_list_screen.dart';
@@ -101,7 +100,8 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> fetchDriveStorageInfo() async {
     try {
-      final info = await DriveService().fetchDriveStorageInfo(user: widget.user);
+      final info =
+          await DriveService().fetchDriveStorageInfo(user: widget.user);
       setState(() {
         driveUsage = info['usage'];
         driveLimit = info['limit'];
@@ -118,9 +118,9 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text('Google Drive', style: TextStyle(fontSize: 18)),
             Text('Directory Manager', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
@@ -185,7 +185,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Image.network(
               'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80',
               fit: BoxFit.cover,
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withAlpha((0.2 * 255).toInt()),
               colorBlendMode: BlendMode.darken,
             ),
           ),
@@ -195,11 +195,12 @@ class _MainScreenState extends State<MainScreen> {
                 : isLoading
                     ? const CircularProgressIndicator()
                     : error != null
-                        ? Text(error!, style: const TextStyle(color: Colors.red))
+                        ? Text(error!,
+                            style: const TextStyle(color: Colors.red))
                         : Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.85),
+                              color: Colors.white.withAlpha((0.85 * 255).toInt()),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
@@ -208,11 +209,13 @@ class _MainScreenState extends State<MainScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Text('ログイン成功！'),
-                                Text('ユーザー: ${widget.user.displayName ?? "No Name"}'),
+                                Text(
+                                    'ユーザー: ${widget.user.displayName ?? "No Name"}'),
                                 Text('メール: ${widget.user.email}'),
                                 const SizedBox(height: 24),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: Colors.grey[200],
                                     borderRadius: BorderRadius.circular(8),
@@ -240,14 +243,22 @@ class _MainScreenState extends State<MainScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text('ファイル数: ${fileCount ?? "-"}'),
-                                Text('総容量: ${totalSize != null ? (totalSize! / (1024 * 1024)).toStringAsFixed(2) + " MB" : "-"}'),
+                                Text(
+                                    totalSize != null
+                                        ? '総容量: ${(totalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
+                                        : '総容量: -'),
                                 const SizedBox(height: 8),
-                                Text('全ディレクトリ総ファイル数: '
+                                Text(
+                                    '全ディレクトリ総ファイル数: '
                                     '${allDirectoriesTotalFileCount ?? "-"}',
-                                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Text('全ディレクトリ総容量: '
-                                    '${allDirectoriesTotalSize != null ? (allDirectoriesTotalSize! / (1024 * 1024)).toStringAsFixed(2) + " MB" : "-"}',
-                                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                Text(
+                                    allDirectoriesTotalSize != null
+                                        ? '全ディレクトリ総容量: ${(allDirectoriesTotalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
+                                        : '全ディレクトリ総容量: -',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
                                 if (driveUsage != null && driveLimit != null)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8),
@@ -255,7 +266,9 @@ class _MainScreenState extends State<MainScreen> {
                                       'Google Drive使用量: '
                                       '${(driveUsage! / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB / '
                                       '${(driveLimit! / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue),
                                     ),
                                   ),
                               ],

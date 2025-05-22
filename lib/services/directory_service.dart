@@ -8,26 +8,24 @@ class DirectoryService {
   final DirectoryRepository _repo = DirectoryRepository();
   final DirectoryHistoryRepository _historyRepo = DirectoryHistoryRepository();
   final List<DirectoryInfo> _defaultDirectories = [
-    DirectoryInfo(id: '1GOg_E9HkpHSwiu5CjIsDEnUWJdFOQJW6', name: 'test'),
     DirectoryInfo(id: 'root', name: 'root'),
-    DirectoryInfo(id: '1KByKJjIPovnKTcVGdi7OXxmEMi-FCnhd', name: '追加ディレクトリ'),
   ];
 
-  Future<List<DirectoryInfo>> loadDirectories() async {
-    final dirs = await _repo.loadDirectories();
+  Future<List<DirectoryInfo>> loadDirectories(GoogleSignInAccount user) async {
+    final dirs = await _repo.loadDirectories(user.id);
     if (dirs.isEmpty) {
-      await _repo.saveDirectories(_defaultDirectories);
+      await _repo.saveDirectories(user.id, _defaultDirectories);
       return List<DirectoryInfo>.from(_defaultDirectories);
     }
     return dirs;
   }
 
-  Future<void> saveDirectories(List<DirectoryInfo> dirs) async {
-    await _repo.saveDirectories(dirs);
+  Future<void> saveDirectories(GoogleSignInAccount user, List<DirectoryInfo> dirs) async {
+    await _repo.saveDirectories(user.id, dirs);
   }
 
   Future<List<DirectoryInfo>> fetchDirectories(GoogleSignInAccount user) async {
-    final dirs = await loadDirectories();
+    final dirs = await loadDirectories(user);
     List<DirectoryInfo> result = [];
     for (final dir in dirs) {
       try {
@@ -43,8 +41,8 @@ class DirectoryService {
     return result;
   }
 
-  Future<void> addOrUpdateDirectory(DirectoryInfo directory) async {
-    final dirs = await loadDirectories();
+  Future<void> addOrUpdateDirectory(GoogleSignInAccount user, DirectoryInfo directory) async {
+    final dirs = await loadDirectories(user);
     final idx = dirs.indexWhere((d) => d.id == directory.id);
     final now = DateTime.now();
     if (idx >= 0) {
@@ -68,14 +66,14 @@ class DirectoryService {
         ),
       );
     }
-    await saveDirectories(dirs);
+    await saveDirectories(user, dirs);
   }
 
-  Future<void> removeDirectory(String id) async {
-    final dirs = await loadDirectories();
+  Future<void> removeDirectory(GoogleSignInAccount user, String id) async {
+    final dirs = await loadDirectories(user);
     final target = dirs.firstWhere((d) => d.id == id, orElse: () => DirectoryInfo(id: id, name: ''));
     dirs.removeWhere((d) => d.id == id);
-    await saveDirectories(dirs);
+    await saveDirectories(user, dirs);
     await _historyRepo.addHistoryEntry(
       DirectoryHistoryEntry(
         action: 'delete',
