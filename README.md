@@ -64,6 +64,9 @@ flutter run
 - `lib/repositories/` ... データ永続化  
 - `lib/widgets/` ... 共通UI部品
 
+GoogleDrive-DM\android\app\google-services.jsonは念のため管理対象外としました。  
+console.firebase.google.comで環境に合わせて作成する必要があります。(SHA1絡み)
+
 初期要件定義の機能をエミュレータで確認した後、  
 あれもこれも欲しいと次々と機能をエージェントに要求して  
 色々機能を拡張しました。
