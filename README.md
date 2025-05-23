@@ -89,7 +89,53 @@ GoogleDriveDirectoryManager画面(メイン)
 |__グーグルドライブ指定ディレクトリ全総ファイル数表示  
 |__グーグルドライブ使用容量/総容量表示
 
+画面1
+<img width="343" alt="001_アプリInfo" src="https://github.com/user-attachments/assets/cdf43e2d-999f-4020-8ed0-6202e591f558" />
+画面2
+<img width="343" alt="002_ログイン(起動)画面" src="https://github.com/user-attachments/assets/a3122be1-a1fe-4e62-8dcd-169d22fa67e1" />
+
+画面3
+<img width="343" alt="003_アカウント選択画面" src="https://github.com/user-attachments/assets/03947eb0-fbb6-4df7-8dd9-4480c3a0a237" />
+画面4
+<img width="343" alt="004_メイン画面" src="https://github.com/user-attachments/assets/8a015c16-58a1-4d38-8ff5-ddd54627697e" />
+
+画面5
+<img width="343" alt="005_メイン(ディレクトリ選択)画面" src="https://github.com/user-attachments/assets/d7a9b7f5-a9cc-42c2-9331-5f2d1bceba2b" />
+画面6
+<img width="343" alt="006_メイン(ディレクトリ選択後)画面" src="https://github.com/user-attachments/assets/a573b4ac-17f8-47ee-9307-563f16b75d7c" />
+
+画面7
+<img width="343" alt="007_ディレクトリ一覧画面" src="https://github.com/user-attachments/assets/1d35b7e7-634e-4c1f-9873-fa29c75685ca" />
+画面8
+<img width="343" alt="008_ディレクトリ(名)編集(初期)画面" src="https://github.com/user-attachments/assets/74a0c9c3-a0b8-4f2d-aaf7-9cfd1aeac91f" />
+
+画面9
+<img width="343" alt="009_ディレクトリ(名)編集(入力)画面" src="https://github.com/user-attachments/assets/a6b498cb-620f-476e-8aec-c70d5c1c6c56" />
+画面10
+<img width="343" alt="010_ディレクトリ一覧(修正後)画面" src="https://github.com/user-attachments/assets/83cae559-a128-48ea-bd5b-218d8e45cf71" />
+
+画面11
+<img width="343" alt="011_メイン(ディレクトリ名修正後)画面" src="https://github.com/user-attachments/assets/93626de3-da7b-4fc6-98a7-010949e31983" />
+画面12 (画面8で削除ボタン押下)
+<img width="343" alt="012_ディレクトリ一覧(ディレクトリ削除後)画面" src="https://github.com/user-attachments/assets/9fdf6934-d6d8-4bc9-adb8-75545eb85a46" />
+
+画面13
+<img width="343" alt="013_メイン(ディレクトリ削除後)画面" src="https://github.com/user-attachments/assets/d1dd43c1-1a84-44b0-97e1-98a7e793775d" />
+画面14
+<img width="343" alt="014_ディレクトリID登録(初期)画面" src="https://github.com/user-attachments/assets/f25870b3-f88c-4799-ad2f-99c4527383d9" />
+
+画面15
+<img width="343" alt="015_ディレクトリID登録(入力後)画面" src="https://github.com/user-attachments/assets/85f601d9-39a8-428f-8227-2caba7ffd83a" />
+画面16
+<img width="343" alt="016_ディレクトリ一覧(登録後)画面" src="https://github.com/user-attachments/assets/a5d754e2-05f3-4f7a-977e-81254fa5a420" />
+
+画面17
+<img width="343" alt="017_メイン(ディレクトリ登録後)画面" src="https://github.com/user-attachments/assets/955e37be-f263-472a-94f6-cb95bd764ef7" />
+画面18
+<img width="343" alt="018_ディレクトリ操作履歴画面" src="https://github.com/user-attachments/assets/88c594b4-201f-48af-aa42-9479d020ee2c" />
+
 コードは全てエージェントが書いてます。  
+
 私がしたことは、エージェントが関与できないGitHubに関する設定  
 console.cloud.google.comでOAUTHの設定  
 console.firebase.google.comでAndroidのパッケージ設定(SHA1)  
@@ -122,3 +168,6 @@ AndroidエミュレータのDevice manager設定でgoogle play service(開発者
 初めてエージェントを使用して作成した時間してはまぁまぁ?なのではないでしょうか。  
 (エージェントがなかったら、グーグル先生で分からないことを検索して試行錯誤してどれほどかかっていただろう)  
 あとはソースコードレビューして知識吸収したり、自動テストの実装と手動テスト追加を行っていく予定です。
+
+2日目微調整していたら、エージェントが何らかのセッション制限や環境要因でツールが動作していません。  
+と言い出して、あえなく手動修正することに・・・
