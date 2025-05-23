@@ -115,7 +115,7 @@ GoogleDriveDirectoryManager画面(メイン)
 <img width="343" alt="010_ディレクトリ一覧(修正後)画面" src="https://github.com/user-attachments/assets/83cae559-a128-48ea-bd5b-218d8e45cf71" />
 
 画面11
-<img width="343" alt="011_メイン(ディレクトリ名修正後)画面" src="https://github.com/user-attachments/assets/93626de3-da7b-4fc6-98a7-010949e31983" />
+<img width="343" alt="011_メイン(ディレクトリ名修正後)画面" src="https://github.com/user-attachments/assets/93626de3-da7b-4fc6-98a7-010949e31983" />  
 画面12 (画面8で削除ボタン押下)
 <img width="343" alt="012_ディレクトリ一覧(ディレクトリ削除後)画面" src="https://github.com/user-attachments/assets/9fdf6934-d6d8-4bc9-adb8-75545eb85a46" />
 
