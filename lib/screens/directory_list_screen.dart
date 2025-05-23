@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/directory_service.dart';
 import '../models/directory.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'directory_edit_screen.dart';
 
 class DirectoryListScreen extends StatefulWidget {
-  final GoogleSignInAccount user;
+  final dynamic user; // GoogleSignInAccountまたはDummyUser
   const DirectoryListScreen({super.key, required this.user});
 
   @override

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../services/drive_service.dart';
 import '../services/directory_service.dart';
 import '../models/directory.dart';
 import 'directory_list_screen.dart';
@@ -9,9 +8,10 @@ import 'login_screen.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import '../services/auth_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MainScreen extends StatefulWidget {
-  final GoogleSignInAccount user;
+  final dynamic user; // GoogleSignInAccountまたはDummyUser
   const MainScreen({super.key, required this.user});
 
   @override
@@ -62,58 +62,33 @@ class _MainScreenState extends State<MainScreen> {
       isLoading = true;
       error = null;
     });
-    try {
-      final files = await DriveService().fetchFilesInDirectory(
-        user: widget.user,
-        directoryId: selectedDirectory.id,
-      );
-      setState(() {
-        fileCount = files.length;
-        totalSize = files.fold<int>(0, (sum, f) => sum + f.size);
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        error = 'Google Drive取得エラー: $e';
-        isLoading = false;
-      });
-    }
+    // Web用ダミーデータ
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() {
+      fileCount = 5;
+      totalSize = 1024 * 1024 * 12; // 12MB
+      isLoading = false;
+    });
   }
 
   Future<void> fetchAllDirectoriesTotalSizeAndCount() async {
-    int sumSize = 0;
-    int sumCount = 0;
-    for (final dir in directories) {
-      try {
-        final files = await DriveService().fetchFilesInDirectory(
-          user: widget.user,
-          directoryId: dir.id,
-        );
-        sumSize += files.fold<int>(0, (s, f) => s + f.size);
-        sumCount += files.length;
-      } catch (_) {}
-    }
+    await Future.delayed(const Duration(milliseconds: 200));
     setState(() {
-      allDirectoriesTotalSize = sumSize;
-      allDirectoriesTotalFileCount = sumCount;
+      allDirectoriesTotalSize = 1024 * 1024 * 30; // 30MB
+      allDirectoriesTotalFileCount = 15;
     });
   }
 
   Future<void> fetchDriveStorageInfo() async {
-    try {
-      final info =
-          await DriveService().fetchDriveStorageInfo(user: widget.user);
-      setState(() {
-        driveUsage = info['usage'];
-        driveLimit = info['limit'];
-      });
-    } catch (_) {
-      setState(() {
-        driveUsage = null;
-        driveLimit = null;
-      });
-    }
+    await Future.delayed(const Duration(milliseconds: 200));
+    setState(() {
+      driveUsage = 1024 * 1024 * 1024 * 2; // 2GB
+      driveLimit = 1024 * 1024 * 1024 * 15; // 15GB
+    });
   }
+
+  String get userDisplayName => widget.user.displayName ?? widget.user.displayName ?? 'No Name';
+  String get userEmail => widget.user.email ?? widget.user.email ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -127,24 +102,27 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            tooltip: 'アプリ終了',
-            onPressed: () {
-              // アプリ終了（Android: SystemNavigator.pop, その他: exit(0)）
-              try {
-                SystemNavigator.pop();
-              } catch (_) {
-                exit(0);
-              }
-            },
-          ),
+          if (!kIsWeb)
+            IconButton(
+              icon: const Icon(Icons.close),
+              tooltip: 'アプリ終了',
+              onPressed: () {
+                try {
+                  SystemNavigator.pop();
+                } catch (_) {
+                  exit(0);
+                }
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'ログアウト',
             onPressed: () async {
-              await widget.user.clearAuthCache();
-              await AuthService().signOut();
+              // GoogleSignInAccountの場合のみclearAuthCache/signOut
+              if (widget.user is GoogleSignInAccount) {
+                await widget.user.clearAuthCache();
+                await AuthService().signOut();
+              }
               if (context.mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -210,9 +188,8 @@ class _MainScreenState extends State<MainScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Text('ログイン成功！'),
-                                Text(
-                                    'ユーザー: ${widget.user.displayName ?? "No Name"}'),
-                                Text('メール: ${widget.user.email}'),
+                                Text('ユーザー: ' + userDisplayName),
+                                Text('メール: ' + userEmail),
                                 const SizedBox(height: 24),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
