@@ -10,6 +10,10 @@ class AuthService {
 
   Future<GoogleSignInAccount?> signInWithGoogle() async {
     try {
+      // 既にサインイン済みの場合のみ signOut を実行
+      if (await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut();
+      }
       final account = await _googleSignIn.signIn();
       return account;
     } catch (e) {
