@@ -31,7 +31,7 @@ Git、VSC(拡張機能含む)、Dart、Flutterの環境は整えられている�
 
 ## これまでの作業の流れ
 
-1. [`setup_cafirsttest.bat`](setup_cafirsttest.bat) によりプロジェクト雛型ディレクトリ・ファイルを自動生成
+1. プロジェクト雛型ディレクトリ・ファイルを自動生成(エージェント出力)
 2. 必要な依存パッケージ（google_sign_in, googleapis, provider, shared_preferences）を [`pubspec.yaml`](pubspec.yaml) に追加
 3. Google認証・Google Drive API連携のためのサービスクラスを作成
 4. ディレクトリ・ファイル情報のデータモデルを [`lib/models/`](lib/models/) に実装
