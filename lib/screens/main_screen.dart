@@ -8,6 +8,7 @@ import 'directory_history_screen.dart';
 import 'login_screen.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import '../services/auth_service.dart';
 
 class MainScreen extends StatefulWidget {
   final GoogleSignInAccount user;
@@ -143,7 +144,7 @@ class _MainScreenState extends State<MainScreen> {
             tooltip: 'ログアウト',
             onPressed: () async {
               await widget.user.clearAuthCache();
-              await GoogleSignIn().signOut();
+              await AuthService().signOut();
               if (context.mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
