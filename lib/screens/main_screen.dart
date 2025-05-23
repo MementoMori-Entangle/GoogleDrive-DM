@@ -8,6 +8,7 @@ import 'login_screen.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import '../services/auth_service.dart';
+import '../services/drive_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MainScreen extends StatefulWidget {
@@ -62,29 +63,56 @@ class _MainScreenState extends State<MainScreen> {
       isLoading = true;
       error = null;
     });
-    // Web用ダミーデータ
-    await Future.delayed(const Duration(milliseconds: 300));
-    setState(() {
-      fileCount = 5;
-      totalSize = 1024 * 1024 * 12; // 12MB
-      isLoading = false;
-    });
+    try {
+      final files = await DriveService().fetchFilesInDirectory(
+        user: widget.user,
+        directoryId: selectedDirectory.id,
+      );
+      setState(() {
+        fileCount = files.length;
+        totalSize = files.fold<int>(0, (sum, f) => sum + f.size);
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = 'Google Drive取得エラー: $e';
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> fetchAllDirectoriesTotalSizeAndCount() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    int sumSize = 0;
+    int sumCount = 0;
+    for (final dir in directories) {
+      try {
+        final files = await DriveService().fetchFilesInDirectory(
+          user: widget.user,
+          directoryId: dir.id,
+        );
+        sumSize += files.fold<int>(0, (s, f) => s + f.size);
+        sumCount += files.length;
+      } catch (_) {}
+    }
     setState(() {
-      allDirectoriesTotalSize = 1024 * 1024 * 30; // 30MB
-      allDirectoriesTotalFileCount = 15;
+      allDirectoriesTotalSize = sumSize;
+      allDirectoriesTotalFileCount = sumCount;
     });
   }
 
   Future<void> fetchDriveStorageInfo() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    setState(() {
-      driveUsage = 1024 * 1024 * 1024 * 2; // 2GB
-      driveLimit = 1024 * 1024 * 1024 * 15; // 15GB
-    });
+    try {
+      final info = await DriveService().fetchDriveStorageInfo(user: widget.user);
+      setState(() {
+        driveUsage = info['usage'];
+        driveLimit = info['limit'];
+      });
+    } catch (_) {
+      setState(() {
+        driveUsage = null;
+        driveLimit = null;
+      });
+    }
   }
 
   String get userDisplayName => widget.user.displayName ?? widget.user.displayName ?? 'No Name';
