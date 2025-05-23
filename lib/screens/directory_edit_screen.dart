@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:io';
 import '../models/directory.dart';
 
 class DirectoryEditScreen extends StatefulWidget {
   final DirectoryInfo? initialDirectory;
   final void Function(DirectoryInfo directory) onSave;
   final void Function()? onDelete;
-  const DirectoryEditScreen({super.key, this.initialDirectory, required this.onSave, this.onDelete});
+  const DirectoryEditScreen(
+      {super.key, this.initialDirectory, required this.onSave, this.onDelete});
 
   @override
   State<DirectoryEditScreen> createState() => _DirectoryEditScreenState();
@@ -21,8 +20,10 @@ class _DirectoryEditScreenState extends State<DirectoryEditScreen> {
   @override
   void initState() {
     super.initState();
-    _idController = TextEditingController(text: widget.initialDirectory?.id ?? '');
-    _nameController = TextEditingController(text: widget.initialDirectory?.name ?? '');
+    _idController =
+        TextEditingController(text: widget.initialDirectory?.id ?? '');
+    _nameController =
+        TextEditingController(text: widget.initialDirectory?.name ?? '');
   }
 
   @override
@@ -36,20 +37,8 @@ class _DirectoryEditScreenState extends State<DirectoryEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.initialDirectory == null ? 'ディレクトリID登録' : 'ディレクトリID編集'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            tooltip: 'アプリ終了',
-            onPressed: () {
-              try {
-                SystemNavigator.pop();
-              } catch (_) {
-                exit(0);
-              }
-            },
-          ),
-        ],
+        title:
+            Text(widget.initialDirectory == null ? 'ディレクトリID登録' : 'ディレクトリID編集'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -76,19 +65,23 @@ class _DirectoryEditScreenState extends State<DirectoryEditScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        widget.onSave(DirectoryInfo(id: _idController.text, name: _nameController.text));
+                        widget.onSave(DirectoryInfo(
+                            id: _idController.text,
+                            name: _nameController.text));
                         Navigator.pop(context);
                       }
                     },
                     child: const Text('保存'),
                   ),
-                  if (widget.initialDirectory != null && widget.onDelete != null)
+                  if (widget.initialDirectory != null &&
+                      widget.onDelete != null)
                     ElevatedButton(
                       onPressed: () {
                         widget.onDelete!();
                         Navigator.pop(context);
                       },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
                       child: const Text('削除'),
                     ),
                 ],
