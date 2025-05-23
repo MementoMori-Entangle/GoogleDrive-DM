@@ -2,7 +2,7 @@
 
 Google Drive と連携したファイル管理アプリ（Flutter製）
 
-GitHub copilot agent(GPT-4.1)でVibe codingしてみました。  
+GitHub copilot agent(GPT-4.1)で実装してみました。  
 使用したDart言語やフレームワークのFlutterは初めて使用しました。(知識ゼロ)
 
 --エージェントに初回に投げたコンテキスト  
@@ -173,3 +173,47 @@ AndroidエミュレータのDevice manager設定でgoogle play service(開発者
 2日目微調整していたら、エージェントが何らかのセッション制限や環境要因でツールが動作していません。  
 と言い出して、あえなく手動修正することに・・・  時間がたっても治らなかったので、  
 最新リポジトリから環境作り直ししたらエージェント使えるようになりました。(原因不明)
+
+# web版追加
+第2弾もGitHub copilot agent(GPT-4.1)で実装してみました。  
+ただし、エージェントが動かないため「ask」でVibe codingで試しました。  
+結果、完成率99％で失敗、ディレクトリID登録から一覧に戻り、メイン画面に戻るときに、  
+必ずトークン消失でGoogleDriveにアクセスできなくなる問題が発生しました。  
+askとwebで調べつくしても原因が判明しなく、firebaseの設定なのか  
+プログラムが悪いのか切り分けも難しかったので、一旦仕切り直しにしました。(4時間くらい)  
+次にリポジトリから最新を取り直して・・・ここでエージェントが復活したので、  
+次はエージェントに一からfirebaseを使用して実装を依頼しました。  
+結果、完成率10％くらいでした。まさかのログイン認証処理が突破できませんでした。(2時間くらい)  
+一度firebaseはあきらめて、シンプルにAndroid版と同じGoogle認証  
+（google_sign_in）で処理することにしました。  
+結果、さっくと完成しました。(30分くらい)  
+flutter+firebaseの実装は(GPT-4.1)エージェントでは学習データが少ない?  
+(上位モデルのプレミアムリクエストで処理するか悩んだけど、  
+MMGのデータサイエンスにかかわることに使いたいので我慢)
+
+私がやったことはエージェントに指示を出して、  
+OAuth2.0認証用にconsole.cloud.google.comのOAuth 2.0 クライアント IDを作成して  
+クライアントIDをエージェントに提示し、動作確認⇔指示の繰り返しでした。
+
+以下エージェントが修正した概要(コンテキストで生成)
+
+Web版対応で作成・修正した主なファイルと対応内容
+
+index.html  
+<meta name="viewport" ...> を追加し、スマートフォンサイズでの表示に最適化  
+<meta name="google-signin-client_id" ...> を追加し、Google認証（google_sign_in）をWebで有効化
+
+main_screen.dart  
+Web版では「アプリ終了」ボタンを非表示にするようkIsWeb判定を追加  
+Web用のダミーデータ（ファイル数・容量など）を返す実装を追加  
+レイアウトやUIがWeb/スマホでも崩れないよう調整
+
+directory_service.dart  
+ユーザーIDの扱いをWeb/Android/iOSで共通化し、Webでもディレクトリ情報が永続化されるよう修正
+
+directory_repository.dart  
+（内部実装）Webでshared_preferencesのsetStringList/getStringListが動作しない場合に備え、  
+setString/  getString＋jsonエンコード/デコード方式で保存するよう修正
+
+login_screen.dart  
+Google認証（google_sign_in）によるログイン処理をWebでも動作するよう整理

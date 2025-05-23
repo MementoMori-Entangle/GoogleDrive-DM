@@ -1,4 +1,3 @@
-import 'package:google_sign_in/google_sign_in.dart';
 import '../models/directory.dart';
 import '../repositories/directory_repository.dart';
 import '../models/directory_history.dart';
@@ -11,20 +10,22 @@ class DirectoryService {
     DirectoryInfo(id: 'root', name: 'root'),
   ];
 
-  Future<List<DirectoryInfo>> loadDirectories(GoogleSignInAccount user) async {
-    final dirs = await _repo.loadDirectories(user.id);
+  Future<List<DirectoryInfo>> loadDirectories(dynamic user) async {
+    final userId = user is String ? user : user.id;
+    final dirs = await _repo.loadDirectories(userId);
     if (dirs.isEmpty) {
-      await _repo.saveDirectories(user.id, _defaultDirectories);
+      await _repo.saveDirectories(userId, _defaultDirectories);
       return List<DirectoryInfo>.from(_defaultDirectories);
     }
     return dirs;
   }
 
-  Future<void> saveDirectories(GoogleSignInAccount user, List<DirectoryInfo> dirs) async {
-    await _repo.saveDirectories(user.id, dirs);
+  Future<void> saveDirectories(dynamic user, List<DirectoryInfo> dirs) async {
+    final userId = user is String ? user : user.id;
+    await _repo.saveDirectories(userId, dirs);
   }
 
-  Future<List<DirectoryInfo>> fetchDirectories(GoogleSignInAccount user) async {
+  Future<List<DirectoryInfo>> fetchDirectories(dynamic user) async {
     final dirs = await loadDirectories(user);
     List<DirectoryInfo> result = [];
     for (final dir in dirs) {
@@ -41,7 +42,7 @@ class DirectoryService {
     return result;
   }
 
-  Future<void> addOrUpdateDirectory(GoogleSignInAccount user, DirectoryInfo directory) async {
+  Future<void> addOrUpdateDirectory(dynamic user, DirectoryInfo directory) async {
     final dirs = await loadDirectories(user);
     final idx = dirs.indexWhere((d) => d.id == directory.id);
     final now = DateTime.now();
@@ -69,7 +70,7 @@ class DirectoryService {
     await saveDirectories(user, dirs);
   }
 
-  Future<void> removeDirectory(GoogleSignInAccount user, String id) async {
+  Future<void> removeDirectory(dynamic user, String id) async {
     final dirs = await loadDirectories(user);
     final target = dirs.firstWhere((d) => d.id == id, orElse: () => DirectoryInfo(id: id, name: ''));
     dirs.removeWhere((d) => d.id == id);
