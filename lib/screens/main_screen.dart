@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:window_size/window_size.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../services/directory_service.dart';
 import '../models/directory.dart';
 import 'directory_list_screen.dart';
 import 'directory_history_screen.dart';
 import 'login_screen.dart';
-import 'package:flutter/services.dart';
-import 'dart:io';
 import '../services/auth_service.dart';
 import '../services/drive_service.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import '../app_config.dart';
+import 'dart:io' show exit, Platform;
+import 'package:flutter/services.dart';
 
 class MainScreen extends StatefulWidget {
   final dynamic user; // GoogleSignInAccountまたはDummyUser
-  const MainScreen({super.key, required this.user});
+  final String? displayName; // Windows用
+  final String? email; // Windows用
+  const MainScreen({
+    super.key,
+    required this.user,
+    this.displayName,
+    this.email,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -35,8 +44,26 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    // Windowsデスクトップのみウィンドウサイズ変更
+    if (!kIsWeb) {
+      _setWindowsWindowSize();
+    }
     fetchDirectoriesAndInit();
     fetchDriveStorageInfo();
+  }
+
+  void _setWindowsWindowSize() {
+    setWindowTitle(AppConfig.appName);
+    setWindowFrame(const Rect.fromLTWH(
+      AppConfig.windowLeft,
+      AppConfig.windowTop,
+      AppConfig.windowWidth,
+      AppConfig.windowHeight,
+    ));
+    setWindowMinSize(
+        const Size(AppConfig.windowMinWidth, AppConfig.windowMinHeight));
+    setWindowMaxSize(
+        const Size(AppConfig.windowMaxWidth, AppConfig.windowMaxHeight));
   }
 
   Future<void> fetchDirectoriesAndInit() async {
@@ -102,7 +129,8 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> fetchDriveStorageInfo() async {
     try {
-      final info = await DriveService().fetchDriveStorageInfo(user: widget.user);
+      final info =
+          await DriveService().fetchDriveStorageInfo(user: widget.user);
       setState(() {
         driveUsage = info['usage'];
         driveLimit = info['limit'];
@@ -115,8 +143,45 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  String get userDisplayName => widget.user.displayName ?? widget.user.displayName ?? 'No Name';
-  String get userEmail => widget.user.email ?? widget.user.email ?? '';
+  String get userDisplayName {
+    if (widget.user is GoogleSignInAccount) {
+      return widget.user.displayName ?? 'No Name';
+    } else if (widget.displayName != null) {
+      return widget.displayName!;
+    } else {
+      return 'No Name';
+    }
+  }
+
+  String get userEmail {
+    if (widget.user is GoogleSignInAccount) {
+      return widget.user.email ?? '';
+    } else if (widget.email != null) {
+      return widget.email!;
+    } else {
+      return '';
+    }
+  }
+
+  Widget _buildCloseButton() {
+    if (kIsWeb) return Container();
+    return IconButton(
+      icon: const Icon(Icons.close),
+      tooltip: 'アプリ終了',
+      onPressed: () {
+        // Windowsデスクトップはexit(0)、それ以外はSystemNavigator.pop()
+        try {
+          if (!kIsWeb && Platform.isWindows) {
+            exit(0);
+          } else {
+            SystemNavigator.pop();
+          }
+        } catch (_) {
+          // 何もしない（Webや未対応環境）
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,23 +190,13 @@ class _MainScreenState extends State<MainScreen> {
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Google Drive', style: TextStyle(fontSize: 18)),
-            Text('Directory Manager', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(AppConfig.appTitleMain, style: TextStyle(fontSize: 18)),
+            Text(AppConfig.appTitleSub,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
-          if (!kIsWeb)
-            IconButton(
-              icon: const Icon(Icons.close),
-              tooltip: 'アプリ終了',
-              onPressed: () {
-                try {
-                  SystemNavigator.pop();
-                } catch (_) {
-                  exit(0);
-                }
-              },
-            ),
+          _buildCloseButton(),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'ログアウト',
@@ -207,7 +262,8 @@ class _MainScreenState extends State<MainScreen> {
                         : Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Colors.white.withAlpha((0.85 * 255).toInt()),
+                              color:
+                                  Colors.white.withAlpha((0.85 * 255).toInt()),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
@@ -216,8 +272,8 @@ class _MainScreenState extends State<MainScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Text('ログイン成功！'),
-                                Text('ユーザー: ' + userDisplayName),
-                                Text('メール: ' + userEmail),
+                                Text('ユーザー: $userDisplayName'),
+                                Text('メール: $userEmail'),
                                 const SizedBox(height: 24),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -249,10 +305,9 @@ class _MainScreenState extends State<MainScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text('ファイル数: ${fileCount ?? "-"}'),
-                                Text(
-                                    totalSize != null
-                                        ? '総容量: ${(totalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
-                                        : '総容量: -'),
+                                Text(totalSize != null
+                                    ? '総容量: ${(totalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
+                                    : '総容量: -'),
                                 const SizedBox(height: 8),
                                 Text(
                                     '全ディレクトリ総ファイル数: '

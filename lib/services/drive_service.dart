@@ -3,16 +3,23 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import '../models/file_info.dart';
+import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 
 class DriveService {
   Future<List<FileInfo>> fetchFilesInDirectory({
-    required GoogleSignInAccount user,
+    required dynamic user, // GoogleSignInAccountまたはauth.AuthClient
     required String directoryId,
   }) async {
-    final authHeaders = await user.authHeaders;
-    final client = GoogleAuthClient(authHeaders);
+    late http.Client client;
+    if (user is GoogleSignInAccount) {
+      final authHeaders = await user.authHeaders;
+      client = GoogleAuthClient(authHeaders);
+    } else if (user is auth.AuthClient) {
+      client = user;
+    } else {
+      throw ArgumentError('userはGoogleSignInAccountまたはAuthClientである必要があります');
+    }
     final driveApi = drive.DriveApi(client);
-
     final fileList = await driveApi.files.list(
       q: "'$directoryId' in parents and trashed = false",
       spaces: 'drive',
@@ -31,9 +38,16 @@ class DriveService {
   }
 
   Future<Map<String, int>> fetchDriveStorageInfo(
-      {required GoogleSignInAccount user}) async {
-    final authHeaders = await user.authHeaders;
-    final client = GoogleAuthClient(authHeaders);
+      {required dynamic user}) async {
+    late http.Client client;
+    if (user is GoogleSignInAccount) {
+      final authHeaders = await user.authHeaders;
+      client = GoogleAuthClient(authHeaders);
+    } else if (user is auth.AuthClient) {
+      client = user;
+    } else {
+      throw ArgumentError('userはGoogleSignInAccountまたはAuthClientである必要があります');
+    }
     final driveApi = drive.DriveApi(client);
     final about = await driveApi.about.get($fields: 'storageQuota');
     final quota = about.storageQuota;

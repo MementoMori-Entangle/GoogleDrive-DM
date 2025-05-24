@@ -1,4 +1,4 @@
-// Microsoft Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource.
 //
 #pragma code_page(65001)
 #include "resource.h"
@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "cafirsttest" "\0"
+            VALUE "FileDescription", "GoogleDrive Directory Manager" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "cafirsttest" "\0"
+            VALUE "InternalName", "GoogleDriveDM" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "cafirsttest.exe" "\0"
-            VALUE "ProductName", "cafirsttest" "\0"
+            VALUE "OriginalFilename", "GoogleDriveDM.exe" "\0"
+            VALUE "ProductName", "GoogleDrive Directory Manager" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
