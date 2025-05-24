@@ -174,7 +174,7 @@ AndroidエミュレータのDevice manager設定でgoogle play service(開発者
 と言い出して、あえなく手動修正することに・・・  時間がたっても治らなかったので、  
 最新リポジトリから環境作り直ししたらエージェント使えるようになりました。(原因不明)
 
-# web版追加
+# Web版追加
 第2弾もGitHub copilot agent(GPT-4.1)で実装してみました。  
 ただし、エージェントが動かないため「ask」でVibe codingで試しました。  
 結果、完成率99％で失敗、ディレクトリID登録から一覧に戻り、メイン画面に戻るときに、  
@@ -218,7 +218,7 @@ setString/  getString＋jsonエンコード/デコード方式で保存するよ
 login_screen.dart  
 Google認証（google_sign_in）によるログイン処理をWebでも動作するよう整理
 
-# windows版追加
+# Windows版追加
 第3弾もGitHub copilot agent(GPT-4.1)で実装してみました。  
 今回はAndriod版やweb版と違いOAuth2.0認証周りを別途独自実装する必要があり、  
 この切り分け作業でエージェントが主にweb版に大きく影響を与えることになりました。  
