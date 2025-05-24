@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
+import 'app_config.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -23,7 +24,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Google Drive ファイル管理アプリ',
+      title: AppConfig.appName,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

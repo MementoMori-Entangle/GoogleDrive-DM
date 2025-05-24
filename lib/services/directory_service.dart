@@ -1,3 +1,4 @@
+import 'package:google_sign_in/google_sign_in.dart';
 import '../models/directory.dart';
 import '../repositories/directory_repository.dart';
 import '../models/directory_history.dart';
@@ -11,7 +12,17 @@ class DirectoryService {
   ];
 
   Future<List<DirectoryInfo>> loadDirectories(dynamic user) async {
-    final userId = user is String ? user : user.id;
+    String userId;
+    if (user is String) {
+      userId = user;
+    } else if (user is GoogleSignInAccount) {
+      userId = user.id;
+    } else if (user.runtimeType.toString().contains('AuthenticatedClient')) {
+      userId = "windows_user";
+    } else {
+      throw ArgumentError(
+          'userはGoogleSignInAccountまたはAuthClientまたはStringである必要があります');
+    }
     final dirs = await _repo.loadDirectories(userId);
     if (dirs.isEmpty) {
       await _repo.saveDirectories(userId, _defaultDirectories);
@@ -21,7 +32,17 @@ class DirectoryService {
   }
 
   Future<void> saveDirectories(dynamic user, List<DirectoryInfo> dirs) async {
-    final userId = user is String ? user : user.id;
+    String userId;
+    if (user is String) {
+      userId = user;
+    } else if (user is GoogleSignInAccount) {
+      userId = user.id;
+    } else if (user.runtimeType.toString().contains('AuthenticatedClient')) {
+      userId = "windows_user";
+    } else {
+      throw ArgumentError(
+          'userはGoogleSignInAccountまたはAuthClientまたはStringである必要があります');
+    }
     await _repo.saveDirectories(userId, dirs);
   }
 
@@ -42,7 +63,8 @@ class DirectoryService {
     return result;
   }
 
-  Future<void> addOrUpdateDirectory(dynamic user, DirectoryInfo directory) async {
+  Future<void> addOrUpdateDirectory(
+      dynamic user, DirectoryInfo directory) async {
     final dirs = await loadDirectories(user);
     final idx = dirs.indexWhere((d) => d.id == directory.id);
     final now = DateTime.now();
@@ -72,7 +94,8 @@ class DirectoryService {
 
   Future<void> removeDirectory(dynamic user, String id) async {
     final dirs = await loadDirectories(user);
-    final target = dirs.firstWhere((d) => d.id == id, orElse: () => DirectoryInfo(id: id, name: ''));
+    final target = dirs.firstWhere((d) => d.id == id,
+        orElse: () => DirectoryInfo(id: id, name: ''));
     dirs.removeWhere((d) => d.id == id);
     await saveDirectories(user, dirs);
     await _historyRepo.addHistoryEntry(

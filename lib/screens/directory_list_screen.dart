@@ -75,7 +75,9 @@ class _DirectoryListScreenState extends State<DirectoryListScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : error != null
-              ? Center(child: Text(error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(error!, style: const TextStyle(color: Colors.red)))
               : ListView.separated(
                   itemCount: directories.length,
                   separatorBuilder: (_, __) => const Divider(),

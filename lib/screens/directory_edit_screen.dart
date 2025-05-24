@@ -5,8 +5,12 @@ class DirectoryEditScreen extends StatefulWidget {
   final DirectoryInfo? initialDirectory;
   final void Function(DirectoryInfo directory) onSave;
   final void Function()? onDelete;
-  const DirectoryEditScreen(
-      {super.key, this.initialDirectory, required this.onSave, this.onDelete});
+  const DirectoryEditScreen({
+    super.key,
+    this.initialDirectory,
+    required this.onSave,
+    this.onDelete,
+  });
 
   @override
   State<DirectoryEditScreen> createState() => _DirectoryEditScreenState();
