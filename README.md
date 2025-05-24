@@ -217,3 +217,33 @@ setString/  getString＋jsonエンコード/デコード方式で保存するよ
 
 login_screen.dart  
 Google認証（google_sign_in）によるログイン処理をWebでも動作するよう整理
+
+# windows版追加
+第3弾もGitHub copilot agent(GPT-4.1)で実装してみました。  
+今回はAndriod版やweb版と違いOAuth2.0認証周りを別途独自実装する必要があり、  
+この切り分け作業でエージェントが主にweb版に大きく影響を与えることになりました。  
+Windows版で使用する機能(パッケージ)をimportするだけでweb版がクラッシュすることになりました。  
+ネイティブの部分はしっかりエージェントに都度支持を出さないと、  
+他環境に影響を与える実装をすることがあるので要注意です。  
+今回のWindows版対応は約8時間かかりました。  
+一番時間がかかったのは、シークレットキーの扱いです。  
+実装時にエージェントはWindowsアプリではクライアントキーだけでよくて、  
+シークレットキーはなくてもいいよとかたくなに譲らなくて、すっかり信じ込んでしまったため、  
+2時間くらいなんで認証されないんだろうとconsole.cloud.google.comの  
+OAuthの設定を変えたりして、動作確認をしていました。  
+公式のドキュメントを読ませて学習させても、シークレットキーはなくてもいいよとなるし・・・  
+console.cloud.google.com側の設定がいけないのかFlutterのコードがいけないのかわからなくなったので、  
+Windowsアプリということもあり、C#で認証アプリ作ってどうなるか試してみました。  
+結果、シークレットキーは必須でした。  
+Exceptionコピペしてエージェントに渡したら、2024年まではなんちゃらといい、  
+仕様変わったんですかね?みたい発言をしてきました。(慢心ダメ絶対)  
+
+console.cloud.google.com追加設定は  
+OAuth 2.0 クライアント IDを種類デスクトップで作成  
+データアクセスにWindows版で使用する../auth/userinfo.email、openid、  
+.../auth/userinfo.profileの3種を新たに追加  
+(Andriod版、web版でも使う、.../auth/drive.readonlyはそのまま)
+
+Windows版をビルド(テスト)するときは環境変数にシークレットキーを引数で渡す必要があるので注意  
+flutter run -d windows --dart-define=GOOGLE_CLIENT_SECRET_WINDOWS=シークレットキー  
+flutter build windows --dart-define=GOOGLE_CLIENT_SECRET_WINDOWS=シークレットキー
