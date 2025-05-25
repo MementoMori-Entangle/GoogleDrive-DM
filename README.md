@@ -269,3 +269,8 @@ a moment を待ってから再試行するか、別のモデルに切り替え�
 月額10ドル課金はGPT4.1無制限ですと書かれていますが、実際は短時間に大量に使用すると制限がかかるようです。  
 AgentモードはIDE、askモードはブラウザ(GitHub)で使い分けたほうがより多く利用できそうです。  
 (IDEとブラウザは連動していないので制限も別枠?)
+
+Linux版のテスト(バグ修正)完了  
+Linuxはuserが他環境と違い、Map<String, dynamic>で返ってきていたので処理の切り分けが必要でした。  
+WindowsとLinuxで交互に行っているとflutter runした時「Error: Build process failed.」になった場合は、  
+flutter pub cache repair → flutter clean → flutter pub getで改善
