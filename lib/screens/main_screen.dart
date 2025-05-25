@@ -44,26 +44,40 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // Windowsデスクトップのみウィンドウサイズ変更
-    if (!kIsWeb) {
-      _setWindowsWindowSize();
+    // Windows/Linuxデスクトップのみウィンドウサイズ変更
+    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+      _setDesktopWindowSize();
     }
     fetchDirectoriesAndInit();
     fetchDriveStorageInfo();
   }
 
-  void _setWindowsWindowSize() {
-    setWindowTitle(AppConfig.appName);
-    setWindowFrame(const Rect.fromLTWH(
-      AppConfig.windowLeft,
-      AppConfig.windowTop,
-      AppConfig.windowWidth,
-      AppConfig.windowHeight,
-    ));
-    setWindowMinSize(
-        const Size(AppConfig.windowMinWidth, AppConfig.windowMinHeight));
-    setWindowMaxSize(
-        const Size(AppConfig.windowMaxWidth, AppConfig.windowMaxHeight));
+  void _setDesktopWindowSize() {
+    if (Platform.isWindows) {
+      setWindowTitle(AppConfig.appName);
+      setWindowFrame(const Rect.fromLTWH(
+        AppConfig.windowLeft,
+        AppConfig.windowTop,
+        AppConfig.windowWidth,
+        AppConfig.windowHeight,
+      ));
+      setWindowMinSize(
+          const Size(AppConfig.windowMinWidth, AppConfig.windowMinHeight));
+      setWindowMaxSize(
+          const Size(AppConfig.windowMaxWidth, AppConfig.windowMaxHeight));
+    } else if (Platform.isLinux) {
+      setWindowTitle(AppConfig.appName);
+      setWindowFrame(const Rect.fromLTWH(
+        AppConfig.windowLeftLinux,
+        AppConfig.windowTopLinux,
+        AppConfig.windowWidthLinux,
+        AppConfig.windowHeightLinux,
+      ));
+      setWindowMinSize(const Size(
+          AppConfig.windowMinWidthLinux, AppConfig.windowMinHeightLinux));
+      setWindowMaxSize(const Size(
+          AppConfig.windowMaxWidthLinux, AppConfig.windowMaxHeightLinux));
+    }
   }
 
   Future<void> fetchDirectoriesAndInit() async {
@@ -91,8 +105,12 @@ class _MainScreenState extends State<MainScreen> {
       error = null;
     });
     try {
+      final driveUser =
+          widget.user is Map<String, dynamic> && widget.user['client'] != null
+              ? widget.user['client']
+              : widget.user;
       final files = await DriveService().fetchFilesInDirectory(
-        user: widget.user,
+        user: driveUser,
         directoryId: selectedDirectory.id,
       );
       setState(() {
@@ -111,10 +129,14 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> fetchAllDirectoriesTotalSizeAndCount() async {
     int sumSize = 0;
     int sumCount = 0;
+    final driveUser =
+        widget.user is Map<String, dynamic> && widget.user['client'] != null
+            ? widget.user['client']
+            : widget.user;
     for (final dir in directories) {
       try {
         final files = await DriveService().fetchFilesInDirectory(
-          user: widget.user,
+          user: driveUser,
           directoryId: dir.id,
         );
         sumSize += files.fold<int>(0, (s, f) => s + f.size);
@@ -129,8 +151,11 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> fetchDriveStorageInfo() async {
     try {
-      final info =
-          await DriveService().fetchDriveStorageInfo(user: widget.user);
+      final driveUser =
+          widget.user is Map<String, dynamic> && widget.user['client'] != null
+              ? widget.user['client']
+              : widget.user;
+      final info = await DriveService().fetchDriveStorageInfo(user: driveUser);
       setState(() {
         driveUsage = info['usage'];
         driveLimit = info['limit'];
@@ -146,6 +171,8 @@ class _MainScreenState extends State<MainScreen> {
   String get userDisplayName {
     if (widget.user is GoogleSignInAccount) {
       return widget.user.displayName ?? 'No Name';
+    } else if (widget.user is Map<String, dynamic>) {
+      return widget.user['displayName'] ?? 'No Name';
     } else if (widget.displayName != null) {
       return widget.displayName!;
     } else {
@@ -156,6 +183,8 @@ class _MainScreenState extends State<MainScreen> {
   String get userEmail {
     if (widget.user is GoogleSignInAccount) {
       return widget.user.email ?? '';
+    } else if (widget.user is Map<String, dynamic>) {
+      return widget.user['email'] ?? '';
     } else if (widget.email != null) {
       return widget.email!;
     } else {
@@ -165,13 +194,14 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildCloseButton() {
     if (kIsWeb) return Container();
+    // IconButton自体はconstにできない（onPressedが非constクロージャのため）
     return IconButton(
       icon: const Icon(Icons.close),
       tooltip: 'アプリ終了',
       onPressed: () {
-        // Windowsデスクトップはexit(0)、それ以外はSystemNavigator.pop()
+        // Windows/Linuxデスクトップはexit(0)、それ以外はSystemNavigator.pop()
         try {
-          if (!kIsWeb && Platform.isWindows) {
+          if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
             exit(0);
           } else {
             SystemNavigator.pop();

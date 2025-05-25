@@ -46,3 +46,6 @@ app.*.map.json
 
 # Firebase/Googleサービス設定ファイル
 android/app/google-services.json
+
+# flutter pub getでWindows と Linuxで一部バージョンが異なるため、pubspec.lockは除外
+pubspec.lock

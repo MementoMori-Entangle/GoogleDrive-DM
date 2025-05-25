@@ -19,6 +19,13 @@ class DirectoryService {
       userId = user.id;
     } else if (user.runtimeType.toString().contains('AuthenticatedClient')) {
       userId = "windows_user";
+    } else if (user is Map<String, dynamic>) {
+      // LinuxはMap<String, dynamic>で渡されることを想定
+      if (user.containsKey('client')) {
+        userId = user['email'] ?? user['displayName'] ?? 'linux_user';
+      } else {
+        userId = 'linux_user';
+      }
     } else {
       throw ArgumentError(
           'userはGoogleSignInAccountまたはAuthClientまたはStringである必要があります');
@@ -39,6 +46,13 @@ class DirectoryService {
       userId = user.id;
     } else if (user.runtimeType.toString().contains('AuthenticatedClient')) {
       userId = "windows_user";
+    } else if (user is Map<String, dynamic>) {
+      // LinuxはMap<String, dynamic>で渡されることを想定
+      if (user.containsKey('client')) {
+        userId = user['email'] ?? user['displayName'] ?? 'linux_user';
+      } else {
+        userId = 'linux_user';
+      }
     } else {
       throw ArgumentError(
           'userはGoogleSignInAccountまたはAuthClientまたはStringである必要があります');
