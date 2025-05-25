@@ -67,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     // Webでdart:ioのPlatformは使えないため、kIsWebで分岐
     final isWindows = !kIsWeb && Platform.isWindows;
+    final isLinux = !kIsWeb && Platform.isLinux;
     return Scaffold(
       appBar: AppBar(title: const Text(AppConfig.appName)),
       body: Center(
@@ -82,7 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   CustomButton(
                     label: isWindows
                         ? 'Googleでログイン（Windowsデスクトップ）'
-                        : 'Googleでログイン',
+                        : isLinux
+                            ? 'Googleでログイン（Linuxデスクトップ）'
+                            : 'Googleでログイン',
                     onPressed: _handleSignIn,
                   ),
                   if (isWindows)
@@ -90,6 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: EdgeInsets.only(top: 16),
                       child: Text(
                         'Windowsでは外部ブラウザ認証が起動します',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                  if (isLinux)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: Text(
+                        'Linuxでは外部ブラウザ認証が起動します',
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ),

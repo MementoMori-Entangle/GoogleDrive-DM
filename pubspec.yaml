@@ -12,18 +12,22 @@ dependencies:
   google_sign_in: any
   googleapis: any
   provider: any
-  shared_preferences: any
+  shared_preferences: ^2.5.3
   http: any
   googleapis_auth: any
   url_launcher: ^6.3.1
   shelf: any
   crypto: any
   window_size: ^0.1.0
+  shared_preferences_linux: ^2.4.1
+  shared_preferences_windows: ^2.4.1
+  url_launcher_linux: ^3.2.1
+  url_launcher_windows: ^3.1.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true

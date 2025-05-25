@@ -42,6 +42,9 @@ class AuthService {
     } else if (!kIsWeb && Platform.isWindows) {
       // Windows用OAuth2.0フロー
       return await _signInWithGoogleWindows();
+    } else if (!kIsWeb && Platform.isLinux) {
+      // Linux用OAuth2.0フロー
+      return await _signInWithGoogleLinux();
     } else {
       throw UnimplementedError('このプラットフォームは未対応です');
     }
@@ -180,6 +183,128 @@ class AuthService {
         'displayName': (displayName != null && displayName.trim().isNotEmpty)
             ? displayName
             : 'Windowsユーザー',
+        'email': email ?? '',
+      };
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // --- Linux用OAuth2.0認証フロー実装 ---
+  Future<Map<String, dynamic>?> _signInWithGoogleLinux() async {
+    final clientSecret = AppConfig.googleClientSecretLinux;
+    const clientId = AppConfig.googleClientIdLinux;
+    const redirectPort = AppConfig.linuxRedirectPort;
+    final redirectUri = Uri.parse(AppConfig.linuxRedirectUri);
+    const scopes = AppConfig.googleScopes;
+    final codeVerifier = _generateCodeVerifier();
+    final codeChallenge = _generateCodeChallenge(codeVerifier);
+    final authUrl = Uri.https(
+      'accounts.google.com',
+      '/o/oauth2/v2/auth',
+      {
+        'response_type': 'code',
+        'client_id': clientId,
+        'redirect_uri': redirectUri.toString(),
+        'scope': scopes.join(' '),
+        'access_type': 'offline',
+        'prompt': 'consent',
+        'code_challenge': codeChallenge,
+        'code_challenge_method': 'S256',
+      },
+    );
+    String? code;
+    final completer = Completer<String?>();
+    late final dynamic server;
+    server = await shelf_io.serve(
+      (shelf.Request request) async {
+        final bodyStr = await request.readAsString();
+        code = request.requestedUri.queryParameters['code'];
+        if (code == null) {
+          final contentType = request.headers['content-type'] ?? '';
+          if (contentType.contains('application/x-www-form-urlencoded')) {
+            final params = Uri.splitQueryString(bodyStr);
+            code = params['code'];
+          }
+        }
+        if (!completer.isCompleted) {
+          completer.complete(code);
+        }
+        Future.delayed(AppConfig.serverCloseDelay, () => server.close());
+        if (code != null) {
+          return shelf.Response.ok(
+              '<html><body>認証が完了しました。アプリに戻ってください。</body></html>',
+              headers: const {'content-type': 'text/html'});
+        } else {
+          return shelf.Response.notFound('認証コードが見つかりません');
+        }
+      },
+      'localhost',
+      redirectPort,
+    );
+    try {
+      final launched = await launchUrl(authUrl);
+      if (!launched) {
+        throw Exception('ブラウザの起動に失敗しました。URL: $authUrl');
+      }
+    } catch (e) {
+      throw Exception('ブラウザの起動に失敗しました。$e');
+    }
+    code = await completer.future;
+    if (code == null) {
+      throw Exception('認証コードの受信に失敗しました');
+    }
+    final tokenUri = Uri.parse('https://oauth2.googleapis.com/token');
+    final response = await http.post(
+      tokenUri,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'grant_type=authorization_code'
+          '&code=${Uri.encodeComponent(code!)}'
+          '&client_id=${Uri.encodeComponent(clientId)}'
+          '&client_secret=${Uri.encodeComponent(clientSecret)}'
+          '&code_verifier=${Uri.encodeComponent(codeVerifier)}'
+          '&redirect_uri=${Uri.encodeComponent(redirectUri.toString())}',
+    );
+    if (response.statusCode != 200) {
+      throw Exception('トークン取得に失敗しました: ${response.body}');
+    }
+    final Map<String, dynamic> tokenData =
+        Map<String, dynamic>.from(jsonDecode(response.body));
+    try {
+      final credentials = auth.AccessCredentials(
+        auth.AccessToken(
+          'Bearer',
+          tokenData['access_token'] as String,
+          DateTime.now()
+              .toUtc()
+              .add(Duration(seconds: tokenData['expires_in'] as int)),
+        ),
+        tokenData['refresh_token'] as String?,
+        scopes,
+      );
+      final client = auth.authenticatedClient(http.Client(), credentials);
+      final userinfoRes = await client
+          .get(Uri.parse('https://openidconnect.googleapis.com/v1/userinfo'));
+      String? displayName;
+      String? email;
+      if (userinfoRes.statusCode == 200) {
+        final userinfo = jsonDecode(userinfoRes.body);
+        displayName = (userinfo['name'] as String?)?.trim();
+        email = (userinfo['email'] as String?)?.trim();
+        if (displayName == null || displayName.isEmpty) {
+          final given = (userinfo['given_name'] as String?)?.trim() ?? '';
+          final family = (userinfo['family_name'] as String?)?.trim() ?? '';
+          final combined = '$given $family'.trim();
+          if (combined.isNotEmpty) {
+            displayName = combined;
+          }
+        }
+      }
+      return {
+        'client': client,
+        'displayName': (displayName != null && displayName.trim().isNotEmpty)
+            ? displayName
+            : 'Linuxユーザー',
         'email': email ?? '',
       };
     } catch (e) {
