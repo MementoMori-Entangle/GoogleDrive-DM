@@ -248,7 +248,7 @@ Windows版をビルド(テスト)するときは環境変数にシークレッ�
 flutter run -d windows --dart-define=GOOGLE_CLIENT_SECRET_WINDOWS=シークレットキー  
 flutter build windows --dart-define=GOOGLE_CLIENT_SECRET_WINDOWS=シークレットキー
 
-# Linux版追加 (未テスト)
+# Linux版追加
 第4弾もGitHub copilot agent(GPT-4.1)で実装してみました。  
 今回はWindows版とほぼ変わらない実装の流れでした。  
 問題は素Windows環境ではテストができないことでした。  
