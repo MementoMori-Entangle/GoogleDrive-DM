@@ -247,3 +247,25 @@ OAuth 2.0 クライアント IDを種類デスクトップで作成
 Windows版をビルド(テスト)するときは環境変数にシークレットキーを引数で渡す必要があるので注意  
 flutter run -d windows --dart-define=GOOGLE_CLIENT_SECRET_WINDOWS=シークレットキー  
 flutter build windows --dart-define=GOOGLE_CLIENT_SECRET_WINDOWS=シークレットキー
+
+# Linux版追加 (未テスト)
+第4弾もGitHub copilot agent(GPT-4.1)で実装してみました。  
+今回はWindows版とほぼ変わらない実装の流れでした。  
+問題は素Windows環境ではテストができないことでした。  
+まず、WSLにubuntu入れてマウントしてテストしようとしましたが、  
+OpenGLの問題でWindows側のXサーバー(VcXsrv)経由で画面表示しようとすると  
+クラッシュ(OpenGL2.0以降が必須)してしまいました。  
+問題はWindows10のWSLはOpenGL1.4からアップグレードすることが色々な問題から難しいということもあり、  
+Windows10でテストしようとすると、VM環境で行う必要があります。  
+というこで、買収後にフリーとなったVMware Workstationでubuntu入れてマウントしてテストしようとしました。  
+OpenGLのバージョンは4.3と最新になりましたが、今度はシンボリックリンクの問題が発生、  
+Windowsへシンボリックリンクはれない&VSCのworkspaceでLinux側でflutter pub getしたことにより、  
+環境面の違いから問題が400件以上発生!!  
+ということで、一度ブランチ切って、VMでFlutter環境作ってからビルドしてテストすることにします。  
+この時点で実装30分、テスト環境作成に四苦八苦で7時間・・・テストは後日にします。    
+(一応、Android、web、windows版に影響はないことは確認済み)  
+今回初めてCopilotに「申し訳ございません。このモデルのレート制限を使い果たしました。  
+a moment を待ってから再試行するか、別のモデルに切り替えてください。」といわれました。  
+月額10ドル課金はGPT4.1無制限ですと書かれていますが、実際は短時間に大量に使用すると制限がかかるようです。  
+AgentモードはIDE、askモードはブラウザ(GitHub)で使い分けたほうがより多く利用できそうです。  
+(IDEとブラウザは連動していないので制限も別枠?)
