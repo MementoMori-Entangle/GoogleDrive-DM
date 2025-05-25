@@ -105,8 +105,12 @@ class _MainScreenState extends State<MainScreen> {
       error = null;
     });
     try {
+      final driveUser =
+          widget.user is Map<String, dynamic> && widget.user['client'] != null
+              ? widget.user['client']
+              : widget.user;
       final files = await DriveService().fetchFilesInDirectory(
-        user: widget.user,
+        user: driveUser,
         directoryId: selectedDirectory.id,
       );
       setState(() {
@@ -125,10 +129,14 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> fetchAllDirectoriesTotalSizeAndCount() async {
     int sumSize = 0;
     int sumCount = 0;
+    final driveUser =
+        widget.user is Map<String, dynamic> && widget.user['client'] != null
+            ? widget.user['client']
+            : widget.user;
     for (final dir in directories) {
       try {
         final files = await DriveService().fetchFilesInDirectory(
-          user: widget.user,
+          user: driveUser,
           directoryId: dir.id,
         );
         sumSize += files.fold<int>(0, (s, f) => s + f.size);
@@ -143,8 +151,11 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> fetchDriveStorageInfo() async {
     try {
-      final info =
-          await DriveService().fetchDriveStorageInfo(user: widget.user);
+      final driveUser =
+          widget.user is Map<String, dynamic> && widget.user['client'] != null
+              ? widget.user['client']
+              : widget.user;
+      final info = await DriveService().fetchDriveStorageInfo(user: driveUser);
       setState(() {
         driveUsage = info['usage'];
         driveLimit = info['limit'];
@@ -160,6 +171,8 @@ class _MainScreenState extends State<MainScreen> {
   String get userDisplayName {
     if (widget.user is GoogleSignInAccount) {
       return widget.user.displayName ?? 'No Name';
+    } else if (widget.user is Map<String, dynamic>) {
+      return widget.user['displayName'] ?? 'No Name';
     } else if (widget.displayName != null) {
       return widget.displayName!;
     } else {
@@ -170,6 +183,8 @@ class _MainScreenState extends State<MainScreen> {
   String get userEmail {
     if (widget.user is GoogleSignInAccount) {
       return widget.user.email ?? '';
+    } else if (widget.user is Map<String, dynamic>) {
+      return widget.user['email'] ?? '';
     } else if (widget.email != null) {
       return widget.email!;
     } else {
