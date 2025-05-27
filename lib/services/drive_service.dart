@@ -1,11 +1,13 @@
-import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 import 'dart:async';
 import '../models/file_info.dart';
 import 'package:googleapis_auth/googleapis_auth.dart' as auth;
+import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:googledrive_dm/services/drive_service_interface.dart';
 
-class DriveService {
+class DriveService implements DriveServiceInterface {
+  @override
   Future<List<FileInfo>> fetchFilesInDirectory({
     required dynamic user, // GoogleSignInAccountまたはauth.AuthClient
     required String directoryId,
@@ -37,6 +39,7 @@ class DriveService {
         .toList();
   }
 
+  @override
   Future<Map<String, int>> fetchDriveStorageInfo(
       {required dynamic user}) async {
     late http.Client client;

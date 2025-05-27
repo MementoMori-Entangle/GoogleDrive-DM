@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
-import '../services/directory_service.dart';
-import '../models/directory.dart';
 import 'directory_edit_screen.dart';
+import '../models/directory.dart';
+import 'package:flutter/material.dart';
+import 'package:googledrive_dm/services/directory_service_interface.dart';
 
 class DirectoryListScreen extends StatefulWidget {
   final dynamic user; // GoogleSignInAccountまたはDummyUser
-  const DirectoryListScreen({super.key, required this.user});
+  final DirectoryServiceInterface directoryServiceInterface;
+  const DirectoryListScreen(
+      {super.key, required this.user, required this.directoryServiceInterface});
 
   @override
   State<DirectoryListScreen> createState() => _DirectoryListScreenState();
@@ -28,7 +30,8 @@ class _DirectoryListScreenState extends State<DirectoryListScreen> {
       error = null;
     });
     try {
-      directories = await DirectoryService().fetchDirectories(widget.user);
+      directories =
+          await widget.directoryServiceInterface.fetchDirectories(widget.user);
       setState(() {
         isLoading = false;
       });
@@ -41,12 +44,14 @@ class _DirectoryListScreenState extends State<DirectoryListScreen> {
   }
 
   void addOrEditDirectory(DirectoryInfo directory) async {
-    await DirectoryService().addOrUpdateDirectory(widget.user, directory);
+    await widget.directoryServiceInterface
+        .addOrUpdateDirectory(widget.user, directory);
     await fetchDirectories();
   }
 
   void deleteDirectory(DirectoryInfo directory) async {
-    await DirectoryService().removeDirectory(widget.user, directory.id);
+    await widget.directoryServiceInterface
+        .removeDirectory(widget.user, directory.id);
     await fetchDirectories();
   }
 

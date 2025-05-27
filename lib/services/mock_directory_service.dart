@@ -2,10 +2,9 @@ import '../models/directory.dart';
 import '../repositories/directory_repository.dart';
 import '../models/directory_history.dart';
 import '../repositories/directory_history_repository.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googledrive_dm/services/directory_service_interface.dart';
 
-class DirectoryService implements DirectoryServiceInterface {
+class MockDirectoryService implements DirectoryServiceInterface {
   final DirectoryRepository _repo = DirectoryRepository();
   final DirectoryHistoryRepository _historyRepo = DirectoryHistoryRepository();
   final List<DirectoryInfo> _defaultDirectories = [
@@ -14,25 +13,9 @@ class DirectoryService implements DirectoryServiceInterface {
 
   @override
   Future<List<DirectoryInfo>> loadDirectories(dynamic user) async {
-    String userId;
-    if (user is String) {
-      userId = user;
-    } else if (user is GoogleSignInAccount) {
-      userId = user.id;
-    } else if (user.runtimeType.toString().contains('AuthenticatedClient')) {
-      userId = "windows_user";
-    } else if (user is Map<String, dynamic>) {
-      // LinuxはMap<String, dynamic>で渡されることを想定
-      if (user.containsKey('client')) {
-        userId = user['email'] ?? user['displayName'] ?? 'linux_user';
-      } else {
-        userId = 'linux_user';
-      }
-    } else {
-      throw ArgumentError(
-          'userはGoogleSignInAccountまたはAuthClientまたはStringである必要があります');
-    }
+    String userId = 'mock_user';
     final dirs = await _repo.loadDirectories(userId);
+
     if (dirs.isEmpty) {
       await _repo.saveDirectories(userId, _defaultDirectories);
       return List<DirectoryInfo>.from(_defaultDirectories);
@@ -42,24 +25,7 @@ class DirectoryService implements DirectoryServiceInterface {
 
   @override
   Future<void> saveDirectories(dynamic user, List<DirectoryInfo> dirs) async {
-    String userId;
-    if (user is String) {
-      userId = user;
-    } else if (user is GoogleSignInAccount) {
-      userId = user.id;
-    } else if (user.runtimeType.toString().contains('AuthenticatedClient')) {
-      userId = "windows_user";
-    } else if (user is Map<String, dynamic>) {
-      // LinuxはMap<String, dynamic>で渡されることを想定
-      if (user.containsKey('client')) {
-        userId = user['email'] ?? user['displayName'] ?? 'linux_user';
-      } else {
-        userId = 'linux_user';
-      }
-    } else {
-      throw ArgumentError(
-          'userはGoogleSignInAccountまたはAuthClientまたはStringである必要があります');
-    }
+    String userId = 'mock_user';
     await _repo.saveDirectories(userId, dirs);
   }
 

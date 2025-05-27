@@ -42,7 +42,10 @@ class _DirectoryHistoryScreenState extends State<DirectoryHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ディレクトリ操作履歴'),
+        title: const Text(
+          'ディレクトリ操作履歴',
+          key: ValueKey('dirOpHisTilteText'),
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -54,9 +57,18 @@ class _DirectoryHistoryScreenState extends State<DirectoryHistoryScreen> {
                   itemBuilder: (context, index) {
                     final entry = history[index];
                     return ListTile(
-                      leading: Text(actionLabel(entry.action)),
-                      title: Text(entry.name),
-                      subtitle: Text('ID: ${entry.id}\n${entry.timestamp.toLocal()}'),
+                      leading: Text(
+                        actionLabel(entry.action),
+                        key: ValueKey('historyAction_${entry.action}_$index'),
+                      ),
+                      title: Text(
+                        entry.name,
+                        key: ValueKey('historyName_${entry.name}_$index'),
+                      ),
+                      subtitle: Text(
+                        'ID: ${entry.id}\n${entry.timestamp.toLocal()}',
+                        key: ValueKey('historId_${entry.id}_$index'),
+                      ),
                     );
                   },
                 ),
