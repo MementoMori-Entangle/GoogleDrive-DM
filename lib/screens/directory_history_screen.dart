@@ -50,7 +50,8 @@ class _DirectoryHistoryScreenState extends State<DirectoryHistoryScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : history.isEmpty
-              ? const Center(child: Text('履歴はありません'))
+              ? const Center(
+                  child: Text('履歴はありません', key: ValueKey('noHistoryText')))
               : ListView.separated(
                   itemCount: history.length,
                   separatorBuilder: (_, __) => const Divider(),

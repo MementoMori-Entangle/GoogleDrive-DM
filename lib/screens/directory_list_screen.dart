@@ -59,7 +59,8 @@ class _DirectoryListScreenState extends State<DirectoryListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ディレクトリID一覧'),
+        title:
+            const Text('ディレクトリID一覧', key: ValueKey('directoryListTitleText')),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -89,8 +90,10 @@ class _DirectoryListScreenState extends State<DirectoryListScreen> {
                   itemBuilder: (context, index) {
                     final dir = directories[index];
                     return ListTile(
-                      title: Text(dir.name),
-                      subtitle: Text('ID: ${dir.id}'),
+                      title: Text(dir.name,
+                          key: ValueKey('dirName_${dir.name}_$index')),
+                      subtitle: Text('ID: ${dir.id}',
+                          key: ValueKey('dirId_${dir.id}_$index')),
                       trailing: IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () async {
