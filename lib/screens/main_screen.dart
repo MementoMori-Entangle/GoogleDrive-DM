@@ -52,7 +52,9 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     // Windows/Linuxデスクトップのみウィンドウサイズ変更
-    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    if (!kIsWeb &&
+        !Platform.environment.containsKey('FLUTTER_TEST') &&
+        (Platform.isWindows || Platform.isLinux)) {
       _setDesktopWindowSize();
     }
     fetchDirectoriesAndInit();
@@ -210,7 +212,9 @@ class _MainScreenState extends State<MainScreen> {
       onPressed: () {
         // Windows/Linuxデスクトップはexit(0)、それ以外はSystemNavigator.pop()
         try {
-          if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+          if (!kIsWeb &&
+              !Platform.environment.containsKey('FLUTTER_TEST') &&
+              (Platform.isWindows || Platform.isLinux)) {
             exit(0);
           } else {
             SystemNavigator.pop();
@@ -318,9 +322,15 @@ class _MainScreenState extends State<MainScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text('ログイン成功！'),
-                                Text('ユーザー: $userDisplayName'),
-                                Text('メール: $userEmail'),
+                                const Text('ディレクトリ操作者',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                    key: ValueKey('directoryOperatorText')),
+                                Text('ユーザー: $userDisplayName',
+                                    key: const ValueKey('userNameText')),
+                                Text('メール: $userEmail',
+                                    key: const ValueKey('userEmailText')),
                                 const SizedBox(height: 24),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -348,6 +358,7 @@ class _MainScreenState extends State<MainScreen> {
                                     },
                                     underline: const SizedBox(),
                                     dropdownColor: Colors.white,
+                                    key: const ValueKey('dropdown'),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -387,6 +398,7 @@ class _MainScreenState extends State<MainScreen> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.blue),
+                                      key: ValueKey('googleDriveUsageText'),
                                     ),
                                   ),
                               ],
