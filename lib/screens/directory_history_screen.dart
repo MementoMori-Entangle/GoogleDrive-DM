@@ -68,7 +68,7 @@ class _DirectoryHistoryScreenState extends State<DirectoryHistoryScreen> {
                       ),
                       subtitle: Text(
                         'ID: ${entry.id}\n${entry.timestamp.toLocal()}',
-                        key: ValueKey('historId_${entry.id}_$index'),
+                        key: ValueKey('historyId_${entry.id}_$index'),
                       ),
                     );
                   },

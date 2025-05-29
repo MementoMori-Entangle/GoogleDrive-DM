@@ -18,7 +18,7 @@ class MockAuthService implements AuthServiceInterface {
       }
     } else if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
       // Windows/Linux用OAuth2.0フロー
-      return await _signInWithGoogleApp();
+      return Future.value(_signInWithGoogleApp());
     } else {
       throw UnimplementedError('このプラットフォームは未対応です');
     }

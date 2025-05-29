@@ -52,7 +52,9 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     // Windows/Linuxデスクトップのみウィンドウサイズ変更
-    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    if (!kIsWeb &&
+        !Platform.environment.containsKey('FLUTTER_TEST') &&
+        (Platform.isWindows || Platform.isLinux)) {
       _setDesktopWindowSize();
     }
     fetchDirectoriesAndInit();
@@ -210,7 +212,9 @@ class _MainScreenState extends State<MainScreen> {
       onPressed: () {
         // Windows/Linuxデスクトップはexit(0)、それ以外はSystemNavigator.pop()
         try {
-          if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+          if (!kIsWeb &&
+              !Platform.environment.containsKey('FLUTTER_TEST') &&
+              (Platform.isWindows || Platform.isLinux)) {
             exit(0);
           } else {
             SystemNavigator.pop();
