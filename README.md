@@ -274,3 +274,7 @@ Linux版のテスト(バグ修正)完了
 Linuxはuserが他環境と違い、Map<String, dynamic>で返ってきていたので処理の切り分けが必要でした。  
 WindowsとLinuxで交互に行っているとflutter runした時「Error: Build process failed.」になった場合は、  
 flutter pub cache repair → flutter clean → flutter pub getで改善
+
+# integrationテスト(E2E) web版追加
+./chromedriver.exe --port=4444  
+flutter drive --driver=test_driver/integration_test.dart --target=test/integration_test.dart -d web-server
