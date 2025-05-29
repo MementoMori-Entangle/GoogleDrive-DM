@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'app_config.dart';
+import 'package:googledrive_dm/services/auth_service_interface.dart';
+import 'package:googledrive_dm/services/directory_service_interface.dart';
+import 'package:googledrive_dm/services/drive_service_interface.dart';
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final AuthServiceInterface authServiceInterface;
+  final DriveServiceInterface driveServiceInterface;
+  final DirectoryServiceInterface directoryServiceInterface;
+  const MyApp(
+      {super.key,
+      required this.authServiceInterface,
+      required this.driveServiceInterface,
+      required this.directoryServiceInterface});
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -30,7 +40,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const LoginScreen(),
+        '/': (context) => LoginScreen(
+            authServiceInterface: widget.authServiceInterface,
+            driveServiceInterface: widget.driveServiceInterface,
+            directoryServiceInterface: widget.directoryServiceInterface),
+        // 他のルートをここに追加できます
       },
     );
   }

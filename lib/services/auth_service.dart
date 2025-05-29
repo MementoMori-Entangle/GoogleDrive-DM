@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:async'; // ← 追加
+import 'auth_service_interface.dart';
+import '../app_config.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis_auth/googleapis_auth.dart' as auth;
@@ -9,14 +11,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:crypto/crypto.dart';
-import '../app_config.dart';
 
-class AuthService {
+class AuthService implements AuthServiceInterface {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: AppConfig.googleScopes,
     clientId: kIsWeb ? AppConfig.googleClientIdWeb : null,
   );
 
+  @override
   Future<dynamic> signInWithGoogle() async {
     if (kIsWeb) {
       try {
@@ -50,6 +52,7 @@ class AuthService {
     }
   }
 
+  @override
   Future<void> signOut() async {
     if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
       await _googleSignIn.signOut();
@@ -57,6 +60,7 @@ class AuthService {
     // Windowsはトークン破棄等が必要ならここで実装
   }
 
+  @override
   GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 
   // --- Windows用OAuth2.0認証フロー実装 ---

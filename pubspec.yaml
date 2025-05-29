@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_sign_in: any
-  googleapis: any
+  googleapis: ^14.0.0
   provider: any
   shared_preferences: ^2.5.3
   http: any
@@ -28,6 +28,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  integration_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true

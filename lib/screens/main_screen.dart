@@ -1,19 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:window_size/window_size.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import '../services/directory_service.dart';
-import '../models/directory.dart';
+import 'dart:io' show exit, Platform;
 import 'directory_list_screen.dart';
 import 'directory_history_screen.dart';
 import 'login_screen.dart';
-import '../services/auth_service.dart';
-import '../services/drive_service.dart';
 import '../app_config.dart';
-import 'dart:io' show exit, Platform;
+import '../models/directory.dart';
+import '../services/auth_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googledrive_dm/services/auth_service_interface.dart';
+import 'package:googledrive_dm/services/drive_service_interface.dart';
+import 'package:googledrive_dm/services/directory_service_interface.dart';
+import 'package:window_size/window_size.dart';
 
 class MainScreen extends StatefulWidget {
+  final AuthServiceInterface authServiceInterface;
+  final DriveServiceInterface driveServiceInterface;
+  final DirectoryServiceInterface directoryServiceInterface;
   final dynamic user; // GoogleSignInAccountまたはDummyUser
   final String? displayName; // Windows用
   final String? email; // Windows用
@@ -22,6 +26,9 @@ class MainScreen extends StatefulWidget {
     required this.user,
     this.displayName,
     this.email,
+    required this.authServiceInterface,
+    required this.driveServiceInterface,
+    required this.directoryServiceInterface,
   });
 
   @override
@@ -85,7 +92,8 @@ class _MainScreenState extends State<MainScreen> {
       directoriesLoading = true;
     });
     try {
-      directories = await DirectoryService().fetchDirectories(widget.user);
+      directories =
+          await widget.directoryServiceInterface.fetchDirectories(widget.user);
       selectedDirectory = directories.first;
       directoriesLoading = false;
       setState(() {});
@@ -109,7 +117,7 @@ class _MainScreenState extends State<MainScreen> {
           widget.user is Map<String, dynamic> && widget.user['client'] != null
               ? widget.user['client']
               : widget.user;
-      final files = await DriveService().fetchFilesInDirectory(
+      final files = await widget.driveServiceInterface.fetchFilesInDirectory(
         user: driveUser,
         directoryId: selectedDirectory.id,
       );
@@ -135,7 +143,7 @@ class _MainScreenState extends State<MainScreen> {
             : widget.user;
     for (final dir in directories) {
       try {
-        final files = await DriveService().fetchFilesInDirectory(
+        final files = await widget.driveServiceInterface.fetchFilesInDirectory(
           user: driveUser,
           directoryId: dir.id,
         );
@@ -155,7 +163,8 @@ class _MainScreenState extends State<MainScreen> {
           widget.user is Map<String, dynamic> && widget.user['client'] != null
               ? widget.user['client']
               : widget.user;
-      final info = await DriveService().fetchDriveStorageInfo(user: driveUser);
+      final info = await widget.driveServiceInterface
+          .fetchDriveStorageInfo(user: driveUser);
       setState(() {
         driveUsage = info['usage'];
         driveLimit = info['limit'];
@@ -238,7 +247,12 @@ class _MainScreenState extends State<MainScreen> {
               }
               if (context.mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => LoginScreen(
+                          authServiceInterface: widget.authServiceInterface,
+                          driveServiceInterface: widget.driveServiceInterface,
+                          directoryServiceInterface:
+                              widget.directoryServiceInterface)),
                   (route) => false,
                 );
               }
@@ -263,7 +277,10 @@ class _MainScreenState extends State<MainScreen> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DirectoryListScreen(user: widget.user),
+                  builder: (context) => DirectoryListScreen(
+                    user: widget.user,
+                    directoryServiceInterface: widget.directoryServiceInterface,
+                  ),
                 ),
               );
               await fetchDirectoriesAndInit();
@@ -334,22 +351,32 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 16),
-                                Text('ファイル数: ${fileCount ?? "-"}'),
-                                Text(totalSize != null
-                                    ? '総容量: ${(totalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
-                                    : '総容量: -'),
+                                Text(
+                                  'ファイル数: ${fileCount ?? "-"}',
+                                  key: ValueKey('filesCountText'),
+                                ),
+                                Text(
+                                  totalSize != null
+                                      ? '総容量: ${(totalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
+                                      : '総容量: -',
+                                  key: ValueKey('totalSizeText'),
+                                ),
                                 const SizedBox(height: 8),
                                 Text(
-                                    '全ディレクトリ総ファイル数: '
-                                    '${allDirectoriesTotalFileCount ?? "-"}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+                                  '全ディレクトリ総ファイル数: '
+                                  '${allDirectoriesTotalFileCount ?? "-"}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                  key: ValueKey('allDirTotalFilesCountText'),
+                                ),
                                 Text(
-                                    allDirectoriesTotalSize != null
-                                        ? '全ディレクトリ総容量: ${(allDirectoriesTotalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
-                                        : '全ディレクトリ総容量: -',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+                                  allDirectoriesTotalSize != null
+                                      ? '全ディレクトリ総容量: ${(allDirectoriesTotalSize! / (1024 * 1024)).toStringAsFixed(2)} MB'
+                                      : '全ディレクトリ総容量: -',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                  key: ValueKey('allDirTotalSizeText'),
+                                ),
                                 if (driveUsage != null && driveLimit != null)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8),

@@ -1,22 +1,41 @@
-import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
-import '../services/auth_service.dart';
-import '../widgets/custom_button.dart';
 import 'main_screen.dart';
 import '../app_config.dart';
+import '../widgets/custom_button.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
+import 'package:googledrive_dm/services/auth_service_interface.dart';
+import 'package:googledrive_dm/services/drive_service_interface.dart';
+import 'package:googledrive_dm/services/directory_service_interface.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final AuthServiceInterface authServiceInterface;
+  final DriveServiceInterface driveServiceInterface;
+  final DirectoryServiceInterface directoryServiceInterface;
+  const LoginScreen(
+      {super.key,
+      required this.authServiceInterface,
+      required this.driveServiceInterface,
+      required this.directoryServiceInterface});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService _authService = AuthService();
+  late final AuthServiceInterface _authServiceInterface;
+  late final DriveServiceInterface _driveServiceInterface;
+  late final DirectoryServiceInterface _directoryServiceInterface;
   bool _isLoading = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _authServiceInterface = widget.authServiceInterface;
+    _driveServiceInterface = widget.driveServiceInterface;
+    _directoryServiceInterface = widget.directoryServiceInterface;
+  }
 
   Future<void> _handleSignIn() async {
     setState(() {
@@ -24,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final user = await _authService.signInWithGoogle();
+      final user = await _authServiceInterface.signInWithGoogle();
       if (user != null && mounted) {
         if (!kIsWeb && Platform.isWindows && user is Map<String, dynamic>) {
           Navigator.pushReplacement(
@@ -34,6 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 user: user['client'],
                 displayName: user['displayName'],
                 email: user['email'],
+                authServiceInterface: _authServiceInterface,
+                driveServiceInterface: _driveServiceInterface,
+                directoryServiceInterface: _directoryServiceInterface,
               ),
             ),
           );
@@ -41,7 +63,12 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => MainScreen(user: user),
+              builder: (context) => MainScreen(
+                user: user,
+                authServiceInterface: _authServiceInterface,
+                driveServiceInterface: _driveServiceInterface,
+                directoryServiceInterface: _directoryServiceInterface,
+              ),
             ),
           );
         }
