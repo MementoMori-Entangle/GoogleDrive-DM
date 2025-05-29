@@ -1,6 +1,6 @@
 # GoogleDriveDirectoryManager
 
-Google Drive と連携したファイル管理アプリ（Flutter製）
+Google Drive と連携したディレクトリ管理アプリ（Flutter製）
 
 GitHub copilot agent(GPT-4.1)で実装してみました。  
 使用したDart言語やフレームワークのFlutterは初めて使用しました。(知識ゼロ)
