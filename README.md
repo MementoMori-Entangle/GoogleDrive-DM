@@ -278,3 +278,15 @@ flutter pub cache repair → flutter clean → flutter pub getで改善
 # integrationテスト(E2E) web版追加
 ./chromedriver.exe --port=4444  
 flutter drive --driver=test_driver/integration_test.dart --target=test/integration_test.dart -d web-server
+
+# widgetテスト (webベース)
+flutter test test/widget_test.dart
+
+# 単体テスト (webベース)
+flutter test test/test.dart  
+
+# ガバレッジテスト
+flutter test test/test.dart --coverage or flutter test test/widget_test.dart --coverage  
+genhtml coverage\lcov.info -o coverage\html  
+start coverage/html/index.html  
+ネイティブアプリ(Windows・Linux・MacOS)に関する一部部分はガバレッジ未対応
