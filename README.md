@@ -132,7 +132,7 @@ GoogleDriveDirectoryManager画面(メイン)
 画面17
 <img width="343" alt="017_メイン(ディレクトリ登録後)画面" src="https://github.com/user-attachments/assets/955e37be-f263-472a-94f6-cb95bd764ef7" />
 画面18
-<img width="343" alt="018_ディレクトリ操作履歴画面" src="https://github.com/user-attachments/assets/88c594b4-201f-48af-aa42-9479d020ee2c" />
+<img width="343" alt="018_ディレクトリ操作履歴画面" src="https://github.com/user-attachments/assets/5c763ef1-5dd7-45fe-968e-7f335b2bfec6" />
 
 コードは全てエージェントが書いてます。  
 
