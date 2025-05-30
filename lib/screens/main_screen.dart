@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googledrive_dm/repositories/directory_history_repository.dart';
 import 'package:googledrive_dm/services/auth_service_interface.dart';
 import 'package:googledrive_dm/services/drive_service_interface.dart';
 import 'package:googledrive_dm/services/directory_service_interface.dart';
@@ -21,6 +22,7 @@ class MainScreen extends StatefulWidget {
   final dynamic user; // GoogleSignInAccountまたはDummyUser
   final String? displayName; // Windows用
   final String? email; // Windows用
+  final ImageProvider? imageProvider;
   const MainScreen({
     super.key,
     required this.user,
@@ -29,6 +31,7 @@ class MainScreen extends StatefulWidget {
     required this.authServiceInterface,
     required this.driveServiceInterface,
     required this.directoryServiceInterface,
+    this.imageProvider,
   });
 
   @override
@@ -47,6 +50,8 @@ class _MainScreenState extends State<MainScreen> {
   late List<DirectoryInfo> directories;
   late DirectoryInfo selectedDirectory;
   bool directoriesLoading = true;
+  final DirectoryHistoryRepository directoryHistoryRepository =
+      DirectoryHistoryRepository();
 
   @override
   void initState() {
@@ -228,6 +233,13 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget imageWidget;
+    if (widget.imageProvider != null) {
+      imageWidget = Image(image: widget.imageProvider!);
+    } else {
+      imageWidget = Image.network(
+          'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80');
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Column(
@@ -269,7 +281,9 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const DirectoryHistoryScreen(),
+                  builder: (context) => DirectoryHistoryScreen(
+                      directoryHistoryRepositoryInterface:
+                          directoryHistoryRepository),
                 ),
               );
             },
@@ -295,12 +309,7 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.network(
-              'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80',
-              fit: BoxFit.cover,
-              color: Colors.black.withAlpha((0.2 * 255).toInt()),
-              colorBlendMode: BlendMode.darken,
-            ),
+            child: imageWidget,
           ),
           Center(
             child: directoriesLoading

@@ -4,6 +4,7 @@ import '../models/directory_history.dart';
 import '../repositories/directory_history_repository.dart';
 import 'package:googledrive_dm/services/directory_service_interface.dart';
 
+// Integrationテスト用モック
 class MockDirectoryService implements DirectoryServiceInterface {
   final DirectoryRepository _repo = DirectoryRepository();
   final DirectoryHistoryRepository _historyRepo = DirectoryHistoryRepository();

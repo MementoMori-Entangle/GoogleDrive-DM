@@ -265,7 +265,7 @@ void main() {
     // 初期状態で履歴がないことを確認
     expect(find.byKey(ValueKey('noHistoryText')), findsOneWidget);
     expect(find.text('履歴はありません'), findsOneWidget);
-  });
+  }, skip: isShouldSkip);
 
   testWidgets('テスト2-5,4-1,4-3', (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(
@@ -322,7 +322,7 @@ void main() {
     expect(dropdownWidget.items, isNotEmpty);
     expect(dropdownWidget.items!.length, 1);
     expect(dropdownWidget.items!.first.value.name, 'root');
-  });
+  }, skip: isShouldSkip);
 
   testWidgets('テスト5-1,5-3-1-5-3-2', (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(

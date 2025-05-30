@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import '../repositories/directory_history_repository.dart';
 import '../models/directory_history.dart';
+import 'package:googledrive_dm/repositories/directory_history_repository_interface.dart';
 
 class DirectoryHistoryScreen extends StatefulWidget {
-  const DirectoryHistoryScreen({super.key});
+  final DirectoryHistoryRepositoryInterface directoryHistoryRepositoryInterface;
+  const DirectoryHistoryScreen(
+      {super.key, required this.directoryHistoryRepositoryInterface});
 
   @override
   State<DirectoryHistoryScreen> createState() => _DirectoryHistoryScreenState();
@@ -21,7 +23,7 @@ class _DirectoryHistoryScreenState extends State<DirectoryHistoryScreen> {
 
   Future<void> loadHistory() async {
     setState(() => isLoading = true);
-    history = await DirectoryHistoryRepository().loadHistory();
+    history = await widget.directoryHistoryRepositoryInterface.loadHistory();
     setState(() => isLoading = false);
   }
 
