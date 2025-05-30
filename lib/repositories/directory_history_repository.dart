@@ -1,25 +1,35 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import './directory_history_repository_interface.dart';
 import '../models/directory_history.dart';
+import '../app_config.dart';
 
-class DirectoryHistoryRepository {
+class DirectoryHistoryRepository
+    implements DirectoryHistoryRepositoryInterface {
   static const _key = 'directory_history';
 
+  @override
   Future<List<DirectoryHistoryEntry>> loadHistory() async {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(_key) ?? [];
-    return list.map((e) => DirectoryHistoryEntry.fromJson(jsonDecode(e))).toList();
+    return list
+        .map((e) => DirectoryHistoryEntry.fromJson(jsonDecode(e)))
+        .toList();
   }
 
-  Future<void> saveHistory(List<DirectoryHistoryEntry> history) async {
+  @override
+  Future<void> saveHistory(List<DirectoryHistoryEntry> entries) async {
     final prefs = await SharedPreferences.getInstance();
-    final list = history.map((e) => jsonEncode(e.toJson())).toList();
+    // 新しい順で最大件数だけ保存
+    final limited = entries.take(AppConfig.maxHistoryEntries).toList();
+    final list = limited.map((e) => jsonEncode(e.toJson())).toList();
     await prefs.setStringList(_key, list);
   }
 
+  @override
   Future<void> addHistoryEntry(DirectoryHistoryEntry entry) async {
     final history = await loadHistory();
-    history.insert(0, entry); // 新しい履歴を先頭に
-    await saveHistory(history);
+    final newList = [entry, ...history];
+    await saveHistory(newList);
   }
 }

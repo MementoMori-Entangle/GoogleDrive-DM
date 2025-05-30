@@ -1,3 +1,4 @@
+import '../app_config.dart';
 import '../models/directory.dart';
 import '../repositories/directory_repository.dart';
 import '../models/directory_history.dart';
@@ -60,6 +61,9 @@ class DirectoryService implements DirectoryServiceInterface {
       throw ArgumentError(
           'userはGoogleSignInAccountまたはAuthClientまたはStringである必要があります');
     }
+    if (userId.isEmpty) {
+      throw ArgumentError('userIdは空にできません');
+    }
     await _repo.saveDirectories(userId, dirs);
   }
 
@@ -84,35 +88,45 @@ class DirectoryService implements DirectoryServiceInterface {
   @override
   Future<void> addOrUpdateDirectory(
       dynamic user, DirectoryInfo directory) async {
+    if (directory.id.isEmpty) {
+      throw ArgumentError('idは空にできません');
+    }
+    if (directory.name.isEmpty) {
+      throw ArgumentError('nameは空にできません');
+    }
     final dirs = await loadDirectories(user);
     final idx = dirs.indexWhere((d) => d.id == directory.id);
-    final now = DateTime.now();
-    if (idx >= 0) {
-      dirs[idx] = directory;
-      await _historyRepo.addHistoryEntry(
-        DirectoryHistoryEntry(
-          action: 'edit',
-          id: directory.id,
-          name: directory.name,
-          timestamp: now,
-        ),
-      );
-    } else {
-      dirs.add(directory);
-      await _historyRepo.addHistoryEntry(
-        DirectoryHistoryEntry(
-          action: 'add',
-          id: directory.id,
-          name: directory.name,
-          timestamp: now,
-        ),
-      );
+    // 追加・更新問わず、同じIDの要素を全て削除
+    dirs.removeWhere((d) => d.id == directory.id);
+    dirs.add(directory);
+    // 最大件数を超える場合は古いものから削除
+    final nonRoot = dirs.where((d) => d.id != 'root').toList();
+    if (nonRoot.length > AppConfig.maxDirectoryEntries) {
+      final keepRoot = dirs.where((d) => d.id == 'root').toList();
+      final limit = AppConfig.maxDirectoryEntries;
+      final limited = nonRoot.sublist(nonRoot.length - limit.toInt());
+      dirs
+        ..clear()
+        ..addAll(keepRoot)
+        ..addAll(limited);
     }
+    final now = DateTime.now();
+    await _historyRepo.addHistoryEntry(
+      DirectoryHistoryEntry(
+        action: idx >= 0 ? 'edit' : 'add',
+        id: directory.id,
+        name: directory.name,
+        timestamp: now,
+      ),
+    );
     await saveDirectories(user, dirs);
   }
 
   @override
   Future<void> removeDirectory(dynamic user, String id) async {
+    if (id.isEmpty) {
+      throw ArgumentError('idは空にできません');
+    }
     final dirs = await loadDirectories(user);
     final target = dirs.firstWhere((d) => d.id == id,
         orElse: () => DirectoryInfo(id: id, name: ''));

@@ -1,5 +1,5 @@
 name: googledrive_dm
-description: Google Drive と連携したファイル管理アプリ
+description: Google Drive と連携したディレクトリ管理アプリ
 publish_to: "none"
 version: 0.1.0
 
@@ -33,3 +33,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/test_bg.png

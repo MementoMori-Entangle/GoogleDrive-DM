@@ -60,4 +60,10 @@ class AppConfig {
 
   // その他の設定値（必要に応じて追加）
   static const Duration serverCloseDelay = Duration(milliseconds: 100);
+
+  /// 履歴・ディレクトリ等の最大登録件数
+  static const int maxHistoryEntries = 100;
+
+  /// ディレクトリ最大登録件数
+  static const int maxDirectoryEntries = 100;
 }

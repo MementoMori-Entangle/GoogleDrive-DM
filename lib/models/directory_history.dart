@@ -27,4 +27,22 @@ class DirectoryHistoryEntry {
         'name': name,
         'timestamp': timestamp.toIso8601String(),
       };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DirectoryHistoryEntry &&
+          runtimeType == other.runtimeType &&
+          action == other.action &&
+          id == other.id &&
+          name == other.name &&
+          timestamp == other.timestamp;
+
+  @override
+  int get hashCode =>
+      action.hashCode ^ id.hashCode ^ name.hashCode ^ timestamp.hashCode;
+
+  @override
+  String toString() =>
+      'DirectoryHistoryEntry(action: $action, id: $id, name: $name, timestamp: $timestamp)';
 }
