@@ -26,7 +26,7 @@ GoogleDriveディレクトリ管理アプリケーション
 まずはAndroidをエミュレータでテストしたいです。  
 --ここまで
 
-事前にJDK24、JDK17(keytoolの問題対応)、AndriodStudio、  
+事前にJDK17、AndriodStudio、  
 Git、VSC(拡張機能含む)、Dart、Flutterの環境は整えられていること  
 
 ## これまでの作業の流れ
