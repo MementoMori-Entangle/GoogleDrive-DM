@@ -10,7 +10,7 @@ GitHub copilot agent(GPT-4.1)で実装してみました。
 GoogleDriveディレクトリ管理アプリケーション
 
 グーグルドライブにアクセスするためには認証が必要となるため、  
-事前にログイン画面でグーグルドライブAPIのAuth2.0に基づく情報を入力して  
+事前にログイン画面でグーグルドライブAPIのOAuth2.0に基づく情報を入力して  
 認証に成功したら、ログインも成功とし、アプリケーションの以下メイン画面へ遷移する。
 
 グーグルドライブの指定ディレクトリに存在する  
@@ -26,12 +26,12 @@ GoogleDriveディレクトリ管理アプリケーション
 まずはAndroidをエミュレータでテストしたいです。  
 --ここまで
 
-事前にJDK17、AndriodStudio、  
+事前にJDK17、AndroidStudio、Linux、  
 Git、VSC(拡張機能含む)、Dart、Flutterの環境は整えられていること  
 
 ## これまでの作業の流れ
 
-1. プロジェクト雛型ディレクトリ・ファイルを自動生成(エージェント出力)
+1. プロジェクト雛型ディレクトリ・ファイルを自動生成(エージェント出力) or flutter create <パッケージ名>
 2. 必要な依存パッケージ（google_sign_in, googleapis, provider, shared_preferences）を [`pubspec.yaml`](pubspec.yaml) に追加
 3. Google認証・Google Drive API連携のためのサービスクラスを作成
 4. ディレクトリ・ファイル情報のデータモデルを [`lib/models/`](lib/models/) に実装
@@ -71,7 +71,7 @@ console.firebase.google.comで環境に合わせて作成する必要があり�
 あれもこれも欲しいと次々と機能をエージェントに要求して  
 色々機能を拡張しました。
 
-ログイン画面(グーグルアカウント使用 AOuth2.0)  
+ログイン画面(グーグルアカウント使用 OAuth2.0)  
 |  
 GoogleDriveDirectoryManager画面(メイン)  
 ヘッダメニュー  
@@ -220,7 +220,7 @@ Google認証（google_sign_in）によるログイン処理をWebでも動作す
 
 # Windows版追加
 第3弾もGitHub copilot agent(GPT-4.1)で実装してみました。  
-今回はAndriod版やweb版と違いOAuth2.0認証周りを別途独自実装する必要があり、  
+今回はAndroid版やweb版と違いOAuth2.0認証周りを別途独自実装する必要があり、  
 この切り分け作業でエージェントが主にweb版に大きく影響を与えることになりました。  
 Windows版で使用する機能(パッケージ)をimportするだけでweb版がクラッシュすることになりました。  
 ネイティブの部分はしっかりエージェントに都度支持を出さないと、  
@@ -242,7 +242,7 @@ console.cloud.google.com追加設定は
 OAuth 2.0 クライアント IDを種類デスクトップで作成  
 データアクセスにWindows版で使用する../auth/userinfo.email、openid、  
 .../auth/userinfo.profileの3種を新たに追加  
-(Andriod版、web版でも使う、.../auth/drive.readonlyはそのまま)
+(Android版、web版でも使う、.../auth/drive.readonlyはそのまま)
 
 Windows版をビルド(テスト)するときは環境変数にシークレットキーを引数で渡す必要があるので注意  
 flutter run -d windows --dart-define=GOOGLE_CLIENT_SECRET_WINDOWS=シークレットキー  
